@@ -1,0 +1,50 @@
+{
+  "name": "karaqr-singer",
+  "version": "1.0.0",
+  "description": "KaraQR Singer App - Vue 3 + Quasar PWA",
+  "productName": "KaraQR Singer",
+  "author": "jsepulveda-datascientist",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint --ext .js,.ts,.vue ./",
+    "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
+    "test": "echo \"See package.json => scripts for available tests.\" && exit 0"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.16.12",
+    "@supabase/supabase-js": "^2.84.0",
+    "axios": "^1.13.2",
+    "pinia": "^2.1.7",
+    "quasar": "^2.16.9",
+    "vue": "^3.4.18",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@quasar/cli": "^2.4.1",
+    "@quasar/vite-plugin": "^1.7.0",
+    "@types/node": "^20.12.7",
+    "@typescript-eslint/eslint-plugin": "^7.16.0",
+    "@typescript-eslint/parser": "^7.16.0",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^9.26.0",
+    "prettier": "^3.3.2",
+    "sass": "^1.94.2",
+    "sass-embedded": "^1.93.3",
+    "typescript": "~5.4.5",
+    "vite": "^5.2.11",
+    "vue-tsc": "^2.2.12",
+    "workbox-webpack-plugin": "^7.1.0"
+  },
+  "engines": {
+    "node": "^22 || ^20 || ^18 || ^16",
+    "npm": ">= 6.13.4",
+    "yarn": ">= 1.21.1"
+  }
+}

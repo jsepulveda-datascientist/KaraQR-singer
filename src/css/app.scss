@@ -1,0 +1,19 @@
+// Estilos globales de la aplicación
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+.my-card {
+  width: 100%;
+  max-width: 350px;
+}
+
+// Personalización de Quasar
+.q-app {
+  font-family: 'Roboto', sans-serif;
+}
+
+// Estilos para PWA
+@media (display-mode: standalone) {
+  .pwa-specific {
+    /* Estilos específicos para PWA */
+  }
+}
