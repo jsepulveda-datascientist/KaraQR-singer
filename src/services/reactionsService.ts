@@ -239,7 +239,15 @@ export class ReactionsService {
       fire: '🔥',
       clap: '👏',
       music: '🎵',
-      amazing: '😍'
+      amazing: '😍',
+      rock: '🤘',
+      guitar: '🎸',
+      electric: '⚡',
+      loud: '🔊',
+      cool: '😎',
+      wow: '🎆',
+      mindblown: '🤩',
+      praise: '🙌'
     }
     return emojiMap[type] || '👍'
   }
