@@ -1,0 +1,179 @@
+// ==============================================
+// 🎵 QueuePage Styles (Simplified)
+// ==============================================
+
+@import '../design-system/variables.scss';
+@import '../design-system/mixins.scss';
+
+// 🎵 Queue Container
+.queue-container {
+  min-height: 100vh;
+  // Background handled by global karaqr-page-bg system
+  padding: $space-4;
+  
+  @include responsive('md') {
+    padding: $space-6;
+  }
+}
+
+// 🎶 Song Item Enhancement
+.song-item {
+  @include card-base;
+  @include card-padding('md');
+  margin: $space-3 0;
+  transition: all $transition-base;
+  border-left: 4px solid transparent;
+  
+  &:hover {
+    @include card-hover;
+    border-left-color: $primary-500;
+    background: linear-gradient(135deg, $primary-50, rgba($secondary-50, 0.5));
+  }
+  
+  &.current-playing {
+    border-left-color: $success-500;
+    background: linear-gradient(135deg, $success-50, rgba($primary-50, 0.5));
+    box-shadow: $shadow-colored-primary;
+  }
+  
+  &.next-up {
+    border-left-color: $warning-500;
+    background: linear-gradient(135deg, $warning-50, rgba($primary-50, 0.3));
+  }
+  
+  .song-title {
+    @include text('lg', 'semibold');
+    background: $gradient-primary;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .song-artist {
+    @include text('sm', 'medium');
+    color: $neutral-600;
+  }
+}
+
+// ➕ Add Song FAB Enhancement
+.add-song-fab {
+  position: fixed;
+  bottom: $space-6;
+  right: $space-6;
+  border-radius: $radius-full;
+  box-shadow: $shadow-lg;
+  z-index: 1000;
+  background: $gradient-primary;
+  color: white;
+  width: 64px;
+  height: 64px;
+  transition: all $transition-base;
+  
+  &:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: $shadow-xl;
+  }
+  
+  .q-icon {
+    font-size: 1.5rem;
+  }
+}
+
+// 🎯 Empty State
+.queue-empty {
+  @include card-base;
+  @include card-padding('xl');
+  text-align: center;
+  margin: $space-8 0;
+  background: linear-gradient(135deg, $neutral-50, rgba($primary-50, 0.3));
+  border: 2px dashed $neutral-300;
+  
+  .empty-icon {
+    font-size: 4rem;
+    color: $neutral-400;
+    margin-bottom: $space-4;
+  }
+  
+  .empty-title {
+    @include text('2xl', 'semibold');
+    color: $neutral-600;
+    margin-bottom: $space-2;
+  }
+  
+  .empty-description {
+    @include text('base', 'normal');
+    color: $neutral-500;
+    margin-bottom: $space-6;
+  }
+}
+
+// 📱 Mobile Responsive Adjustments
+@media (max-width: #{$screen-md - 1px}) {
+  .queue-container {
+    padding: $space-3;
+  }
+  
+  .song-item {
+    @include card-padding('sm');
+    
+    .song-title {
+      @include text('base', 'semibold');
+    }
+    
+    .song-artist {
+      @include text('xs', 'normal');
+    }
+  }
+  
+  .add-song-fab {
+    width: 56px;
+    height: 56px;
+    
+    .q-icon {
+      font-size: 1.25rem;
+    }
+  }
+}
+
+// 🌙 Dark Mode Enhancements
+@include dark-mode {
+  .queue-container {
+    background: linear-gradient(
+      135deg,
+      $dark-surface 0%,
+      rgba($primary-900, 0.2) 30%,
+      rgba($secondary-900, 0.15) 70%,
+      $dark-surface 100%
+    );
+  }
+  
+  .song-item {
+    background: $dark-surface-1;
+    border-color: $dark-surface-3;
+    
+    &:hover {
+      background: linear-gradient(135deg, rgba($primary-500, 0.1), rgba($secondary-500, 0.05));
+    }
+    
+    .song-artist {
+      color: $neutral-400;
+    }
+  }
+  
+  .queue-empty {
+    background: linear-gradient(135deg, $dark-surface-1, rgba($primary-900, 0.2));
+    border-color: $dark-surface-3;
+    
+    .empty-icon {
+      color: $neutral-600;
+    }
+    
+    .empty-title {
+      color: $neutral-300;
+    }
+    
+    .empty-description {
+      color: $neutral-400;
+    }
+  }
+}

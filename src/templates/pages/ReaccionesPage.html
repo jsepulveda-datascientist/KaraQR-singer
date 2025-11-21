@@ -1,0 +1,183 @@
+<q-page class="page-container fade-in karaqr-page-bg">
+  <!-- Mostrar prompt cuando no hay tenant configurado -->
+  <NoTenantPrompt v-if="!isValidTenant" />
+  
+  <!-- Contenido normal cuando hay tenant válido -->
+  <div v-else class="page-content">
+    <div class="page-title q-mb-xl">
+      <div class="title-content">
+        <q-icon name="favorite" class="title-icon-inline" />
+        <div class="title-text">
+          <div class="text-h4 gradient-text">
+            Reacciona en Vivo
+          </div>
+          <div class="text-subtitle1 text-grey-6">
+            ✨ Apoya a los cantantes con tus reacciones ✨
+          </div>
+        </div>
+      </div>
+    </div>
+  
+  <!-- Presentación actual -->
+  <q-card class="q-mb-md" flat bordered>
+    <q-card-section class="q-pa-sm" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.05)); border-bottom: 1px solid rgba(16, 185, 129, 0.2);">
+      <div class="text-subtitle1" style="color: #059669; font-weight: 600; display: flex; align-items: center;">
+        <q-icon name="mic" class="q-mr-sm" style="color: #059669; animation: pulse-music 1.5s ease-in-out infinite;" />
+        Presentación en vivo
+      </div>
+    </q-card-section>
+    
+    <q-card-section v-if="currentPerformance && currentSong">
+      <div class="text-center">
+        <!-- Presentación simplificada -->
+        <div class="performance-live">
+          <div class="text-h6 text-weight-bold text-positive q-mb-sm">
+            🎤 {{ currentPerformance.name }}
+          </div>
+          <div class="text-body1 q-mb-sm">
+            <q-icon name="music_note" color="primary" size="sm" class="q-mr-xs" />
+              {{ currentSong.title }} - <span v-if="currentSong.artist">{{ currentSong.artist }}</span>
+          </div>
+          
+        </div>
+      </div>
+    </q-card-section>
+    
+    <!-- Si hay alguien llamado pero no performing -->
+    <q-card-section v-else-if="calledPerformance && calledSong">
+      <div class="text-center">
+        <!-- Presentación simplificada del llamado -->
+        <div class="performance-called">
+          <div class="text-h6 text-weight-bold text-orange q-mb-sm">
+            <q-icon name="campaign" color="orange" size="sm" class="q-mb-sm" />
+            {{ calledPerformance.name }}
+          </div>
+          <div class="text-body1 q-mb-sm">
+            <q-icon name="music_note" color="orange" size="sm" class="q-mr-xs" />
+              {{ calledSong.title }} - <span v-if="calledSong.artist">{{ calledSong.artist }}</span>
+          </div>
+        </div>
+      </div>
+    </q-card-section>
+    
+    <q-card-section v-else>
+      <div class="text-center text-grey q-py-lg" style="background: linear-gradient(135deg, rgba(156, 163, 175, 0.1), rgba(209, 213, 219, 0.05)); border-radius: 16px; padding: 32px;">
+        <q-icon name="music_off" size="xl" style="color: #9ca3af; animation: float 3s ease-in-out infinite;" />
+        <div class="text-h6 q-mt-sm" style="color: #6b7280; font-weight: 600;">No hay presentación en curso</div>
+        <div style="color: #9ca3af;">Las reacciones aparecerán cuando alguien esté cantando</div>
+      </div>
+    </q-card-section>
+  </q-card>
+  
+  <!-- Reacciones disponibles - siempre visibles -->
+  <q-card class="q-mb-md" flat bordered>
+    <q-card-section class="q-pa-sm" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.05)); border-bottom: 1px solid rgba(99, 102, 241, 0.2);">
+      <div class="text-subtitle1" style="color: #4f46e5; font-weight: 600; display: flex; align-items: center;">
+        <q-icon name="favorite" class="q-mr-sm" style="color: #ef4444; animation: pulse-music 2s ease-in-out infinite;" />
+        Envía tu reacción
+      </div>
+      <div class="text-caption" style="color: #6366f1;">Apoya a los cantantes con tus emociones</div>
+    </q-card-section>
+    
+    <q-card-section>
+      <!-- Indicador de estado de sesión -->
+      <div v-if="!user.isAuthenticated" class="q-mb-md">
+        <q-banner class="bg-warning text-dark" rounded>
+          <template v-slot:avatar>
+            <q-icon name="warning" />
+          </template>
+          Sesión no detectada. Es posible que necesites 
+          <q-btn flat color="primary" label="iniciar sesión" @click="redirectToHome" />
+          para enviar reacciones.
+        </q-banner>
+      </div>
+      
+      <!-- Estado de conexión para debugging -->
+      <div v-if="!isConnected" class="q-mb-md">
+        <q-banner class="bg-negative text-white" rounded>
+          <template v-slot:avatar>
+            <q-icon name="wifi_off" />
+          </template>
+          Sin conexión al sistema de reacciones. Verifica tu conexión a internet.
+        </q-banner>
+      </div>
+      
+      <!-- Botones de reacción mejorados -->
+      <div class="row q-gutter-sm justify-center" style="margin: 20px 0;">
+        <q-btn
+          v-for="(reaction, index) in reactions"
+          :key="reaction.emoji"
+          size="lg"
+          round
+          @click="sendReaction(reaction.type)"
+          :class="{ 'pulse': recentReaction === reaction.type }"
+          :disable="!isConnected || !user.isAuthenticated"
+          class="reaction-button"
+          :style="`
+            width: 60px; 
+            height: 60px; 
+            font-size: 24px; 
+            animation-delay: ${index * 0.1}s;
+            --reaction-color: ${reaction.color};
+          `"
+        >
+          {{ reaction.emoji }}
+          <q-tooltip class="bg-dark text-white">
+            {{ getReactionTooltip(reaction.type) }}
+          </q-tooltip>
+        </q-btn>
+      </div>
+      
+      <!-- Comentarios rápidos mejorados -->
+      <div class="q-mt-lg">
+        <div class="text-h6 q-mb-sm" style="color: #4f46e5; font-weight: 600; display: flex; align-items: center;">
+          <q-icon name="forum" class="q-mr-sm" style="color: #06b6d4;" />
+          💬 Comentarios rápidos
+        </div>
+        <div class="row q-gutter-xs justify-center"
+             style="max-width: 100%; overflow-x: auto; padding: 8px 0;">
+          <q-chip
+            v-for="(comment, index) in quickComments"
+            :key="comment"
+            clickable
+            color="secondary"
+            text-color="white"
+            @click="sendComment(comment)"
+            :disable="!isConnected || !user.isAuthenticated"
+          >
+            {{ comment }}
+          </q-chip>
+        </div>
+      </div>
+    </q-card-section>
+  </q-card>
+  
+  <!-- Botón para volver al home -->
+  <div class="text-center q-mt-lg q-mb-xl">
+    <q-btn
+      color="primary"
+      icon="home"
+      label="Volver al inicio"
+      size="lg"
+      rounded
+      @click="redirectToHome"
+      class="home-btn"
+    />
+  </div>
+  
+  <!-- Floating Action Button para reacción rápida -->
+  <q-page-sticky 
+    v-if="(currentPerformance || calledPerformance) && user.isAuthenticated && isConnected" 
+    position="bottom-right" 
+    :offset="[18, 18]"
+  >
+    <q-btn
+      fab
+      icon="favorite"
+      color="red"
+      @click="sendReaction('love')"
+      class="pulse-heart"
+    />
+  </q-page-sticky>
+  </div> <!-- Cierre del div v-else -->
+</q-page>

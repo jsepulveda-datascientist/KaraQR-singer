@@ -1,0 +1,358 @@
+// ==============================================
+// 💖 ReaccionesPage Simplified Styles
+// ==============================================
+
+@import '../design-system/variables.scss';
+@import '../design-system/mixins.scss';
+
+// 🎭 Background Gradient Enhancement
+.bg-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba($primary-500, 0.1) 0%,
+    rgba($secondary-500, 0.1) 30%,
+    rgba($accent-500, 0.05) 60%,
+    rgba($primary-600, 0.1) 100%
+  );
+  min-height: 100vh;
+  position: relative;
+  
+  @include dark-mode {
+    background: linear-gradient(
+      135deg,
+      rgba($primary-800, 0.2) 0%,
+      rgba($secondary-800, 0.2) 30%,
+      rgba($accent-800, 0.1) 60%,
+      rgba($primary-900, 0.2) 100%
+    );
+  }
+}
+
+// 🎵 Performance Status Cards
+.performance-live,
+.performance-called {
+  @include card-base;
+  @include card-padding('lg');
+  position: relative;
+  overflow: hidden;
+  margin: $space-4 0;
+  transition: all $transition-slow;
+}
+
+.performance-live {
+  background: linear-gradient(
+    135deg,
+    rgba($success-500, 0.1) 0%,
+    rgba($success-400, 0.05) 100%
+  );
+  border-left: 4px solid $success-500;
+  color: $success-700;
+  @include bounce-in(0.8s);
+  
+  .performance-title {
+    @include text('xl', 'bold');
+    margin-bottom: $space-2;
+    background: $gradient-primary;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .performance-subtitle {
+    @include text('base', 'medium');
+    color: $success-600;
+  }
+  
+  @include dark-mode {
+    background: linear-gradient(
+      135deg,
+      rgba($success-500, 0.15) 0%,
+      rgba($success-600, 0.1) 100%
+    );
+    color: $success-400;
+    
+    .performance-subtitle {
+      color: $success-300;
+    }
+  }
+}
+
+.performance-called {
+  background: linear-gradient(
+    135deg,
+    rgba($warning-500, 0.1) 0%,
+    rgba($warning-400, 0.05) 100%
+  );
+  border-left: 4px solid $warning-500;
+  color: $warning-700;
+  @include slide-up($transition-slow, 0.2s);
+  
+  .performance-title {
+    @include text('xl', 'bold');
+    margin-bottom: $space-2;
+    color: $warning-600;
+  }
+  
+  .performance-subtitle {
+    @include text('base', 'medium');
+    color: $warning-600;
+  }
+  
+  @include dark-mode {
+    background: linear-gradient(
+      135deg,
+      rgba($warning-500, 0.15) 0%,
+      rgba($warning-600, 0.1) 100%
+    );
+    color: $warning-400;
+    
+    .performance-title,
+    .performance-subtitle {
+      color: $warning-300;
+    }
+  }
+}
+
+// 💖 Enhanced Reaction Button System
+.reaction-btn-circular {
+  @include button-base;
+  position: relative;
+  aspect-ratio: 1;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: $radius-full;
+  box-shadow: $shadow-lg;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: $backdrop-blur-sm;
+  transition: all $transition-base;
+  overflow: hidden;
+  
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: $shadow-xl;
+    border-color: $primary-300;
+  }
+  
+  &:active {
+    transform: scale(0.95);
+    box-shadow: $shadow-md;
+  }
+  
+  .q-icon {
+    font-size: 2rem;
+    z-index: 1;
+    position: relative;
+    transition: all $transition-base;
+    
+    @include responsive('md') {
+      font-size: 2.5rem;
+    }
+  }
+  
+  // Pulse Animation
+  &.pulse {
+    @include pulse-effect(1.15, 0.8s);
+  }
+  
+  // Active State
+  &.active {
+    background: $gradient-primary !important;
+    color: white;
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: $shadow-colored-primary;
+    
+    .q-icon {
+      animation: heartbeat 0.8s ease-in-out;
+    }
+  }
+  
+  @keyframes heartbeat {
+    0% { transform: scale(1); }
+    25% { transform: scale(1.1); }
+    50% { transform: scale(1); }
+    75% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+}
+
+// 🎵 Song Display Enhancement
+.current-song-display {
+  @include card-base;
+  @include card-padding('lg');
+  text-align: center;
+  margin: $space-6 0;
+  background: $gradient-primary;
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  
+  .song-title {
+    @include text('2xl', 'bold');
+    margin-bottom: $space-2;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .song-artist {
+    @include text('lg', 'medium');
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .song-duration {
+    @include text('base', 'normal');
+    opacity: 0.8;
+    margin-top: $space-2;
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// 🏠 Home Button Enhancement
+.home-btn {
+  @include button-base;
+  @include button-size('lg');
+  @include button-variant('secondary');
+  min-width: 160px;
+  position: relative;
+  overflow: hidden;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-colored-secondary;
+  }
+  
+  @include responsive('md') {
+    @include button-size('xl');
+    min-width: 200px;
+  }
+}
+
+// 📊 Performance Statistics
+.performance-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: $space-4;
+  margin: $space-6 0;
+  
+  .stat-item {
+    @include card-base;
+    @include card-padding('md');
+    text-align: center;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: $backdrop-blur-sm;
+    transition: all $transition-base;
+    
+    &:hover {
+      @include card-hover;
+      background: rgba(255, 255, 255, 0.95);
+    }
+    
+    .stat-number {
+      @include text('2xl', 'bold');
+      background: $gradient-primary;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+    }
+    
+    .stat-label {
+      @include text('sm', 'medium');
+      color: $neutral-600;
+      margin-top: $space-1;
+    }
+  }
+}
+
+// 📱 Mobile Responsive Adjustments
+@media (max-width: #{$screen-md - 1px}) {
+  .reaction-btn-circular {
+    min-height: 60px;
+    border-width: 2px;
+    
+    .q-icon { 
+      font-size: 1.5rem; 
+    }
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+  
+  .performance-live,
+  .performance-called {
+    @include card-padding('md');
+    margin: $space-3 0;
+    
+    .performance-title {
+      @include text('lg', 'bold');
+    }
+    
+    .performance-subtitle {
+      @include text('sm', 'medium');
+    }
+  }
+  
+  .current-song-display {
+    @include card-padding('md');
+    
+    .song-title {
+      @include text('xl', 'bold');
+    }
+    
+    .song-artist {
+      @include text('base', 'medium');
+    }
+  }
+  
+  .performance-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-3;
+    
+    .stat-item {
+      @include card-padding('sm');
+      
+      .stat-number {
+        @include text('xl', 'bold');
+      }
+    }
+  }
+}
+
+// 🌙 Dark Mode Enhancements
+@include dark-mode {
+  .reaction-btn-circular {
+    background: rgba($dark-surface-1, 0.95) !important;
+    border-color: rgba($neutral-400, 0.6);
+    
+    &:hover {
+      border-color: $primary-400;
+    }
+    
+    &.active {
+      background: $gradient-primary !important;
+    }
+  }
+  
+  .current-song-display {
+    background: linear-gradient(
+      135deg,
+      rgba($primary-700, 0.9) 0%,
+      rgba($primary-800, 0.95) 100%
+    );
+  }
+  
+  .performance-stats .stat-item {
+    background: rgba($dark-surface-1, 0.8);
+    
+    &:hover {
+      background: rgba($dark-surface-1, 0.95);
+    }
+    
+    .stat-label {
+      color: $neutral-400;
+    }
+  }
+}

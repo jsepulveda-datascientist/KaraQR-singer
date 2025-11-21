@@ -1,121 +1,4 @@
-<template>
-  <q-layout view="lHh Lpr lff">
-    <q-header v-if="!isLoginPage" elevated>
-      <q-toolbar>
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          aria-label="Menu"
-          @click="toggleLeftDrawer"
-        />
-
-        <q-toolbar-title>
-          KaraQR Singer
-        </q-toolbar-title>
-
-        <!-- Área de usuario -->
-        <div class="row items-center q-gutter-sm">
-          <q-btn
-            v-if="!user.isAuthenticated"
-            flat
-            icon="person_add"
-            label="Crear perfil"
-            @click="redirectToHome"
-          />
-          
-          <div v-else class="row items-center q-gutter-sm user-info">
-            <div class="text-right">
-              <div class="text-subtitle2">{{ user.name }}</div>
-              <div class="text-caption text-grey-4">Cantante</div>
-            </div>
-            <q-btn
-              ref="avatarButton"
-              flat
-              round
-              class="avatar-btn"
-            >
-              <q-avatar size="32px">
-                <img v-if="user.avatar" :src="user.avatar" alt="Avatar">
-                <q-icon v-else name="person" size="20px" />
-              </q-avatar>
-              
-              <q-menu
-                anchor="bottom right"
-                self="top right"
-                transition-show="scale"
-                transition-hide="scale"
-              >
-                <q-list style="min-width: 180px">
-                  <q-item clickable v-close-popup @click="logout">
-                    <q-item-section avatar>
-                      <q-icon name="logout" color="negative" />
-                    </q-item-section>
-                    <q-item-section>
-                      <q-item-label class="text-negative">Cerrar sesión</q-item-label>
-                    </q-item-section>
-                  </q-item>
-                </q-list>
-              </q-menu>
-            </q-btn>
-          </div>
-        </div>
-      </q-toolbar>
-    </q-header>
-
-    <q-drawer
-      v-if="!isLoginPage"
-      v-model="leftDrawerOpen"
-      show-if-above
-      bordered
-    >
-      <q-list>
-        <q-item-label
-          header
-        >
-          Navegación
-        </q-item-label>
-
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
-      </q-list>
-    </q-drawer>
-
-    <q-page-container>
-      <router-view />
-    </q-page-container>
-
-    <!-- Footer con nombre del tenant y estado de conexión -->
-    <q-footer v-if="!isLoginPage" elevated class="bg-primary text-white">
-      <q-toolbar>
-        <div class="row items-center justify-between full-width">
-          <div class="text-body2">
-            🎤 Basement415
-          </div>
-          
-          <div class="text-center">
-            <div class="text-caption">Powered by KaraQR</div>
-          </div>
-          
-          <div class="row items-center q-gutter-xs">
-            <q-icon 
-              :name="isConnected ? 'wifi' : 'wifi_off'" 
-              :color="isConnected ? 'light-green' : 'red'"
-              size="sm"
-            />
-            <span class="text-caption">
-              {{ isConnected ? 'En línea' : 'Desconectado' }}
-            </span>
-          </div>
-        </div>
-      </q-toolbar>
-    </q-footer>
-  </q-layout>
-</template>
+<template src="../templates/layouts/MainLayout.html"></template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
@@ -123,7 +6,8 @@ import { useRouter, useRoute } from 'vue-router'
 import { useTenant } from '../composables/useTenant'
 import { useUser } from '../composables/useUser'
 import { reactionsService } from '../services/reactionsService'
-import EssentialLink, { EssentialLinkProps } from '../components/EssentialLink.vue'
+import EssentialLink from '../components/EssentialLink.vue'
+import type { EssentialLinkProps } from '../types/components'
 
 const router = useRouter()
 const route = useRoute()
@@ -312,31 +196,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-.q-toolbar {
-  backdrop-filter: blur(10px);
-}
-
-.user-info {
-  transition: all 0.3s ease;
-}
-
-.user-info:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 4px 8px;
-}
-
-.avatar-btn {
-  transition: transform 0.2s ease;
-}
-
-.avatar-btn:hover {
-  transform: scale(1.05);
-}
-
-/* Animación para el menú de avatar */
-.q-menu .q-list {
-  border-radius: 12px;
-}
-</style>
+<style src="../styles/layouts/MainLayout.scss" scoped></style>

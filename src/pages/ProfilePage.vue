@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="q-pa-md karaqr-page-bg">
     <div class="text-h4 q-mb-md text-center">
       👤 Mi Perfil en Basement
     </div>

@@ -1,9 +1,6 @@
 // ==============================================
-// 🎨 KaraQR Enhanced App Styles
+// 🎨 KaraQR Simplified App Styles
 // ==============================================
-
-// Import KaraQR Theme (Clean System)
-@import './karaqr-theme.scss';
 
 // Import Design System
 @import '../styles/design-system/variables.scss';
@@ -12,79 +9,9 @@
 // 🔤 Google Fonts Import
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-// 🎨 Global Quasar Override con background consistente
+// 🎨 Global Quasar Override
 .q-app {
   font-family: $font-family-primary !important;
-  background: var(--page-bg) !important;
-}
-
-// Layout principal hereda el background
-.q-layout {
-  background: transparent !important;
-}
-
-.q-page-container {
-  background: transparent !important;
-}
-
-// FORZAR background en páginas específicas con alta especificidad
-.q-app .q-layout .q-page-container .q-page.karaqr-page-bg,
-.q-app .q-layout .q-page-container .q-page,
-.karaqr-page-bg {
-  background: var(--page-bg) !important;
-  min-height: 100vh !important;
-}
-
-/* ===== EFECTOS GLOBALES MEJORADOS ===== */
-
-/* Efecto de carga suave */
-.fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Botones con gradiente animado */
-.btn-animated {
-  background: linear-gradient(45deg, #6366f1, #06b6d4, #6366f1) !important;
-  background-size: 300% 300% !important;
-  animation: gradient-shift 3s ease infinite !important;
-  color: white !important;
-  border: none !important;
-  transition: all 0.3s ease !important;
-}
-
-.btn-animated:hover {
-  transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3) !important;
-}
-
-// 🚨 FORZAR COLORES DE HEADER Y FOOTER
-body .q-app .q-layout .q-header,
-body .q-app .q-layout .q-header .q-toolbar {
-  background-color: rgba(255, 255, 255, 0.95) !important;
-  background-image: none !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-}
-
-body .q-app .q-layout .q-footer,
-body .q-app .q-layout .q-footer .q-toolbar {
-  background-color: #1976d2 !important;
-  background-image: linear-gradient(135deg, #1976d2, #1565c0) !important;
-  background: linear-gradient(135deg, #1976d2, #1565c0) !important;
-}
-
-body .q-app .q-layout .q-footer .q-toolbar * {
-  color: white !important;
 }
 
 // 🎵 Enhanced Card
@@ -373,31 +300,4 @@ body .q-app .q-layout .q-footer .q-toolbar * {
 
 .shadow-colored-secondary {
   box-shadow: $shadow-colored-secondary;
-}
-
-// SISTEMA DE BACKGROUND FORZADO - MÁXIMA ESPECIFICIDAD
-html body .q-app {
-  background: var(--page-bg) !important;
-}
-
-html body .q-app .q-layout {
-  background: transparent !important;
-}
-
-html body .q-app .q-layout .q-page-container {
-  background: transparent !important;
-}
-
-html body .q-app .q-layout .q-page-container .q-page {
-  background: var(--page-bg) !important;
-}
-
-// Forzar en cualquier contenedor de página
-.page-container,
-.karaqr-page-bg,
-.login-page,
-.enhanced-page,
-.queue-container,
-.reacciones-container {
-  background: var(--page-bg) !important;
 }

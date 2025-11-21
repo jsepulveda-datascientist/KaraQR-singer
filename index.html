@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- FORZAR MODO CLARO -->
+    <meta name="color-scheme" content="light only" />
+    <style>
+      /* OVERRIDE INMEDIATO del modo oscuro */
+      :root {
+        color-scheme: light !important;
+      }
+      html, body {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
+        color: #1e293b !important;
+      }
+    </style>
+    
     <title>KaraQR Singer</title>
     <meta name="description" content="KaraQR Singer - Aplicación para cantantes" />
     

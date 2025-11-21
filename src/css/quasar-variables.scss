@@ -1,11 +1,113 @@
-// Quasar SCSS Variables
-$primary: #1976D2;
-$secondary: #26A69A;
-$accent: #9C27B0;
+// ==============================================
+// 🎨 KaraQR Enhanced Quasar Variables
+// ==============================================
 
-$dark: #1d1d1d;
+@import '../styles/design-system/variables.scss';
 
-$positive: #21BA45;
-$negative: #C10015;
-$info: #31CCEC;
-$warning: #F2C037;
+// 🎨 Primary Theme Colors
+$primary: $primary-600;
+$secondary: $secondary-400;
+$accent: $accent-500;
+
+$dark: $dark-surface;
+$dark-page: $dark-surface;
+
+// 🚨 COLORES KARAQR UNIFICADOS
+$karaqr-primary: #6366f1;
+$karaqr-glow: #06b6d4;
+$karaqr-accent: #3b82f6;
+$header-background: linear-gradient(135deg, rgba($karaqr-primary, 0.95) 0%, rgba($karaqr-glow, 0.85) 100%);
+$footer-background: linear-gradient(135deg, $karaqr-primary 0%, $karaqr-glow 70%, $karaqr-accent 100%);
+$toolbar-background: transparent;
+
+// 🌈 Semantic Colors
+$positive: $success-500;
+$negative: $error-500;
+$info: $info-500;
+$warning: $warning-500;
+
+// 🔤 Typography
+$typography-font-family: $font-family-primary;
+$h1: (
+  size: $text-5xl,
+  line-height: $leading-tight,
+  letter-spacing: -0.025em,
+  weight: $font-bold,
+  font-family: $font-family-heading
+);
+
+$h2: (
+  size: $text-4xl,
+  line-height: $leading-tight,
+  letter-spacing: -0.025em,
+  weight: $font-bold,
+  font-family: $font-family-heading
+);
+
+$h3: (
+  size: $text-3xl,
+  line-height: $leading-tight,
+  letter-spacing: -0.025em,
+  weight: $font-semibold,
+  font-family: $font-family-heading
+);
+
+$h4: (
+  size: $text-2xl,
+  line-height: $leading-snug,
+  letter-spacing: -0.025em,
+  weight: $font-semibold,
+  font-family: $font-family-heading
+);
+
+$h5: (
+  size: $text-xl,
+  line-height: $leading-snug,
+  weight: $font-semibold,
+  font-family: $font-family-heading
+);
+
+$h6: (
+  size: $text-lg,
+  line-height: $leading-normal,
+  weight: $font-semibold,
+  font-family: $font-family-heading
+);
+
+// 🎛️ Component Customization
+$button-border-radius: $radius-lg;
+$input-border-radius: $radius-lg;
+$card-border-radius: $radius-xl;
+$dialog-border-radius: $radius-2xl;
+$menu-border-radius: $radius-xl;
+
+// 🌫️ Shadows
+$shadow-1: $shadow-sm;
+$shadow-2: $shadow-base;
+$shadow-3: $shadow-md;
+$shadow-4: $shadow-lg;
+$shadow-5: $shadow-xl;
+
+// 📏 Spacing
+$space-xs: $space-1;
+$space-sm: $space-2;
+$space-md: $space-4;
+$space-lg: $space-6;
+$space-xl: $space-8;
+
+// 🎭 Surface Colors
+$surface: $neutral-0;
+$background: $neutral-50;
+$separator-color: $neutral-200;
+$separator-dark-color: rgba($neutral-600, 0.3);
+
+// 🔴 Forzar colores de componentes Quasar
+$header-bg: rgba(255, 255, 255, 0.95);
+$footer-bg: $primary-600;
+$toolbar-bg: transparent;
+$elevation-color: transparent;
+
+// ⏱️ Transitions
+$generic-border-radius: $radius-lg;
+$button-transition: all $transition-base;
+$field-transition: all $transition-base;

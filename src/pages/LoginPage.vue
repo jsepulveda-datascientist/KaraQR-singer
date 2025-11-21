@@ -1,5 +1,5 @@
 <template>
-  <q-page class="flex flex-center login-page">
+  <q-page class="flex flex-center login-page karaqr-page-bg">
     <!-- Mostrar prompt cuando no hay tenant configurado -->
     <NoTenantPrompt v-if="!isValidTenant" />
     
@@ -75,13 +75,14 @@
               color="primary"
               size="lg"
               label="Conectarse al Karaoke"
-              class="full-width q-mt-xl"
+              class="full-width q-mt-xl btn-animated"
               :loading="loginLoading"
               :disable="!canSubmit"
               unelevated
+              style="background: linear-gradient(135deg, #6366f1, #06b6d4) !important; color: white !important;"
             >
               <template v-slot:loading>
-                <q-spinner-hourglass />
+                <q-spinner-ios color="white" size="24px" />
               </template>
             </q-btn>
             
@@ -220,15 +221,23 @@ onMounted(() => {
 
 <style scoped>
 .login-page {
-  background: linear-gradient(135deg, rgba(25, 118, 210, 0.05) 0%, rgba(156, 39, 176, 0.05) 100%);
+  /* Background handled by global karaqr-page-bg system */
   min-height: 100vh;
 }
 
 .login-card {
   backdrop-filter: blur(10px);
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 20px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: #1e293b !important;
+  transition: all 0.3s ease;
+}
+
+.login-card:hover {
+  background: rgba(255, 255, 255, 0.98) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
 }
 
 .avatar-selection {

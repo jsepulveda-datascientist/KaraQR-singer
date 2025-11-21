@@ -1,0 +1,323 @@
+// ==============================================
+// 🧩 KaraQR Design System - Mixins
+// ==============================================
+
+@import './variables.scss';
+
+// 🎨 Color Utilities
+@mixin text-color($shade: 500) {
+  &.text-primary { color: var(--primary-#{$shade}); }
+  &.text-secondary { color: var(--secondary-#{$shade}); }
+  &.text-accent { color: var(--accent-#{$shade}); }
+  &.text-success { color: var(--success-#{$shade}); }
+  &.text-warning { color: var(--warning-#{$shade}); }
+  &.text-error { color: var(--error-#{$shade}); }
+  &.text-info { color: var(--info-#{$shade}); }
+}
+
+@mixin bg-color($shade: 500) {
+  &.bg-primary { background-color: var(--primary-#{$shade}); }
+  &.bg-secondary { background-color: var(--secondary-#{$shade}); }
+  &.bg-accent { background-color: var(--accent-#{$shade}); }
+  &.bg-success { background-color: var(--success-#{$shade}); }
+  &.bg-warning { background-color: var(--warning-#{$shade}); }
+  &.bg-error { background-color: var(--error-#{$shade}); }
+  &.bg-info { background-color: var(--info-#{$shade}); }
+}
+
+// 🔤 Typography
+@mixin heading($size: 'xl') {
+  font-family: $font-family-heading;
+  font-weight: $font-semibold;
+  line-height: $leading-tight;
+  letter-spacing: -0.025em;
+  
+  @if $size == 'xs' {
+    font-size: $text-lg;
+  } @else if $size == 'sm' {
+    font-size: $text-xl;
+  } @else if $size == 'md' {
+    font-size: $text-2xl;
+  } @else if $size == 'lg' {
+    font-size: $text-3xl;
+  } @else if $size == 'xl' {
+    font-size: $text-4xl;
+  } @else if $size == '2xl' {
+    font-size: $text-5xl;
+  } @else if $size == '3xl' {
+    font-size: $text-6xl;
+  }
+}
+
+@mixin text($size: 'base', $weight: 'normal') {
+  font-family: $font-family-primary;
+  
+  // Font Size
+  @if $size == 'xs' {
+    font-size: $text-xs;
+  } @else if $size == 'sm' {
+    font-size: $text-sm;
+  } @else if $size == 'base' {
+    font-size: $text-base;
+  } @else if $size == 'lg' {
+    font-size: $text-lg;
+  } @else if $size == 'xl' {
+    font-size: $text-xl;
+  } @else if $size == '2xl' {
+    font-size: $text-2xl;
+  }
+  
+  // Font Weight
+  @if $weight == 'light' {
+    font-weight: $font-light;
+  } @else if $weight == 'normal' {
+    font-weight: $font-normal;
+  } @else if $weight == 'medium' {
+    font-weight: $font-medium;
+  } @else if $weight == 'semibold' {
+    font-weight: $font-semibold;
+  } @else if $weight == 'bold' {
+    font-weight: $font-bold;
+  } @else if $weight == 'extrabold' {
+    font-weight: $font-extrabold;
+  }
+}
+
+// 🎛️ Button Styles
+@mixin button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: $font-family-primary;
+  font-weight: $font-medium;
+  transition: all $transition-base;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  user-select: none;
+  
+  &:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}
+
+@mixin button-size($size: 'md') {
+  @if $size == 'xs' {
+    padding: $space-1 $space-2;
+    font-size: $text-xs;
+    border-radius: $radius-base;
+    min-height: 1.5rem;
+  } @else if $size == 'sm' {
+    padding: $space-2 $space-3;
+    font-size: $text-sm;
+    border-radius: $radius-md;
+    min-height: 2rem;
+  } @else if $size == 'md' {
+    padding: $space-3 $space-4;
+    font-size: $text-base;
+    border-radius: $radius-lg;
+    min-height: 2.5rem;
+  } @else if $size == 'lg' {
+    padding: $space-4 $space-6;
+    font-size: $text-lg;
+    border-radius: $radius-xl;
+    min-height: 3rem;
+  } @else if $size == 'xl' {
+    padding: $space-5 $space-8;
+    font-size: $text-xl;
+    border-radius: $radius-2xl;
+    min-height: 3.5rem;
+  }
+}
+
+@mixin button-variant($variant: 'primary') {
+  @if $variant == 'primary' {
+    background: $gradient-primary;
+    color: white;
+    box-shadow: $shadow-sm;
+    
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      transform: translateY(0);
+      box-shadow: $shadow-sm;
+    }
+  } @else if $variant == 'secondary' {
+    background: $gradient-secondary;
+    color: white;
+    box-shadow: $shadow-sm;
+    
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+  } @else if $variant == 'outline' {
+    background: transparent;
+    color: $primary-600;
+    border: 2px solid $primary-200;
+    
+    &:hover {
+      background: $primary-50;
+      border-color: $primary-300;
+    }
+  } @else if $variant == 'ghost' {
+    background: transparent;
+    color: $primary-600;
+    
+    &:hover {
+      background: $primary-50;
+    }
+  } @else if $variant == 'danger' {
+    background: $gradient-error;
+    color: white;
+    box-shadow: $shadow-sm;
+    
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+// 💳 Card Styles
+@mixin card-base {
+  background: white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-base;
+  transition: all $transition-base;
+  border: 1px solid $neutral-200;
+}
+
+@mixin card-hover {
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-2px);
+    border-color: $neutral-300;
+  }
+}
+
+@mixin card-padding($size: 'md') {
+  @if $size == 'sm' {
+    padding: $space-4;
+  } @else if $size == 'md' {
+    padding: $space-6;
+  } @else if $size == 'lg' {
+    padding: $space-8;
+  } @else if $size == 'xl' {
+    padding: $space-10;
+  }
+}
+
+// 📱 Responsive Design
+@mixin responsive($breakpoint) {
+  @if $breakpoint == 'xs' {
+    @media (min-width: #{$screen-xs}) { @content; }
+  } @else if $breakpoint == 'sm' {
+    @media (min-width: #{$screen-sm}) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: #{$screen-md}) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: #{$screen-lg}) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: #{$screen-xl}) { @content; }
+  } @else if $breakpoint == '2xl' {
+    @media (min-width: #{$screen-2xl}) { @content; }
+  }
+}
+
+// ✨ Animations
+@mixin fade-in($duration: $transition-base, $delay: 0s) {
+  opacity: 0;
+  animation: fadeIn $duration ease-out $delay both;
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@mixin slide-up($duration: $transition-base, $delay: 0s, $distance: 20px) {
+  opacity: 0;
+  transform: translateY($distance);
+  animation: slideUp $duration ease-out $delay both;
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY($distance);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@mixin bounce-in($duration: 0.6s, $delay: 0s) {
+  animation: bounceIn $duration ease-out $delay both;
+  
+  @keyframes bounceIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.05);
+    }
+    70% {
+      transform: scale(0.9);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+@mixin pulse-effect($scale: 1.05, $duration: 0.6s) {
+  animation: pulseEffect $duration ease-in-out infinite alternate;
+  
+  @keyframes pulseEffect {
+    0% { transform: scale(1); }
+    100% { transform: scale($scale); }
+  }
+}
+
+// 🌫️ Glass Morphism
+@mixin glass-effect($opacity: 0.1, $blur: 16px) {
+  backdrop-filter: blur($blur);
+  background: rgba(255, 255, 255, $opacity);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+// 🎭 Dark Mode Support
+@mixin dark-mode {
+  @at-root .dark #{&} {
+    @content; 
+  }
+  
+  @media (prefers-color-scheme: dark) { 
+    @content; 
+  }
+}
+
+// 🎯 Focus States
+@mixin focus-ring($color: $primary-500, $offset: 2px) {
+  &:focus {
+    outline: 2px solid transparent;
+    outline-offset: $offset;
+    box-shadow: 0 0 0 2px $color;
+  }
+}

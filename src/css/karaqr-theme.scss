@@ -1,0 +1,230 @@
+// KaraQR Singer Theme Variables - Basado en KaraQR Queue
+:root {
+  // Colores principales
+  --karaqr-primary: #6366f1;
+  --karaqr-secondary: #06b6d4;
+  --karaqr-accent: #8b5cf6;
+  
+  // Background system - sobrio y neutro (grises puros)
+  --page-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+  --page-bg-overlay: rgba(255, 255, 255, 0.7);
+  --page-bg-pattern: 
+    radial-gradient(circle at 20% 20%, rgba(148, 163, 184, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(100, 116, 139, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, transparent 0%, rgba(148, 163, 184, 0.02) 50%, transparent 100%);
+  
+  // Topbar variables (basado en karaQR queue)
+  --topbar-bg: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  --topbar-start-bg: rgba(255, 255, 255, 0.1);
+  --topbar-item-text-color: #ffffff;
+  --topbar-item-hover-bg: rgba(255, 255, 255, 0.12);
+  --topbar-button-bg: rgba(255, 255, 255, 0.1);
+  --topbar-button-hover-bg: rgba(255, 255, 255, 0.2);
+  --topbar-button-border: rgba(255, 255, 255, 0.2);
+  
+  // Footer variables
+  --footer-bg: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+  --footer-text-color: #ffffff;
+  
+  // Layout variables
+  --layout-transition-duration: 0.2s;
+  --layout-border-radius: 8px;
+  --layout-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --layout-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+  
+  // Glassmorphism
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-backdrop-filter: blur(10px);
+}
+
+// Background global consistente para todas las páginas
+.karaqr-page-bg {
+  background: var(--page-bg);
+  background-attachment: fixed;
+  min-height: 100vh;
+  position: relative;
+  
+  // Pseudo-elementos desactivados para evitar overlays problemáticos
+  /*
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--page-bg-pattern);
+    pointer-events: none;
+    z-index: -1;
+  }
+  
+  &::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--page-bg-overlay);
+    pointer-events: none;
+    z-index: -1;
+  }
+  */
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* FORZAR background neutral incluso en modo oscuro */
+    --page-bg: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
+    --page-bg-overlay: rgba(255, 255, 255, 0.7) !important;
+    --page-bg-pattern: 
+      radial-gradient(circle at 20% 20%, rgba(148, 163, 184, 0.04) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(100, 116, 139, 0.03) 0%, transparent 50%),
+      linear-gradient(135deg, transparent 0%, rgba(148, 163, 184, 0.02) 50%, transparent 100%);
+  }
+}
+
+// Tipografía
+.karaqr-title {
+  font-family: 'Poppins', 'Inter', sans-serif;
+  font-weight: 700;
+  color: var(--topbar-item-text-color);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: -0.025em;
+}
+
+.karaqr-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .logo-icon {
+    font-size: 1.8rem;
+    color: var(--topbar-item-text-color);
+  }
+  
+  .logo-text {
+    @extend .karaqr-title;
+    font-size: 1.5rem;
+    margin: 0;
+  }
+}
+
+// Botones con estilo KaraQR
+.karaqr-btn {
+  background: var(--topbar-button-bg);
+  border: 1px solid var(--topbar-button-border);
+  color: var(--topbar-item-text-color);
+  backdrop-filter: var(--glass-backdrop-filter);
+  border-radius: var(--layout-border-radius);
+  transition: all var(--layout-transition-duration) ease;
+  
+  &:hover {
+    background: var(--topbar-button-hover-bg);
+    transform: translateY(-1px);
+    box-shadow: var(--layout-shadow-hover);
+  }
+}
+
+// Panel de usuario
+.karaqr-user-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-backdrop-filter);
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  padding: 8px 12px;
+  
+  .user-name {
+    color: var(--topbar-item-text-color);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  
+  .user-role {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.75rem;
+  }
+}
+
+// Estados de conexión
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--topbar-item-text-color);
+  
+  .status-icon {
+    &.connected {
+      color: #10b981;
+    }
+    
+    &.disconnected {
+      color: #ef4444;
+    }
+  }
+}
+
+// Layout principal
+.karaqr-layout {
+  .layout-header {
+    background: var(--topbar-bg);
+    color: var(--topbar-item-text-color);
+    box-shadow: var(--layout-shadow);
+    
+    .header-toolbar {
+      background: transparent;
+      padding: 0 16px;
+      height: 64px;
+    }
+  }
+  
+  .layout-footer {
+    background: var(--footer-bg);
+    color: var(--footer-text-color);
+    
+    .footer-toolbar {
+      background: transparent;
+      padding: 0 16px;
+      min-height: 48px;
+    }
+  }
+}
+
+// Remover animaciones complejas
+@keyframes none {
+  0%, 100% { 
+    opacity: 1; 
+  }
+}
+
+// Clean animations para mejorar la percepción de calidad
+@keyframes subtle-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.subtle-animation {
+  animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .karaqr-logo .logo-text {
+    font-size: 1.3rem;
+  }
+  
+  .layout-header .header-toolbar {
+    padding: 0 12px;
+  }
+  
+  .karaqr-user-panel {
+    padding: 6px 8px;
+  }
+}
