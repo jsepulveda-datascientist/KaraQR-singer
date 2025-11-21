@@ -127,10 +127,6 @@ async function sendReaction(type: Reaction['type']) {
   try {
     console.log('🚀 sendReaction llamada:', { type, userName: userName.value, isConnected: isConnected.value })
     
-    if (!isConnected.value) {
-      throw new Error('No conectado al sistema de reacciones')
-    }
-
     // Verificar estado de sesión antes de enviar
     if (!user.value.isAuthenticated) {
       console.warn('⚠️ Usuario no autenticado al enviar reacción, verificando sesión...')
@@ -138,6 +134,29 @@ async function sendReaction(type: Reaction['type']) {
       
       if (!user.value.isAuthenticated) {
         throw new Error('Debes iniciar sesión para enviar reacciones')
+      }
+    }
+
+    // Si no está conectado, intentar reconectar automáticamente una vez
+    if (!isConnected.value) {
+      console.log('🔄 Sin conexión, intentando reconectar antes de enviar reacción...')
+      
+      if (tenantId.value) {
+        try {
+          await reactionsService.connect(tenantId.value)
+          isConnected.value = reactionsService.isChannelConnected()
+          
+          if (isConnected.value) {
+            console.log('✅ Reconectado exitosamente antes de enviar reacción')
+          } else {
+            throw new Error('No se pudo establecer la conexión')
+          }
+        } catch (reconnectError) {
+          console.warn('⚠️ Error en reconexión automática:', reconnectError)
+          throw new Error('No se pudo conectar al sistema de reacciones')
+        }
+      } else {
+        throw new Error('No se encontró configuración del karaoke')
       }
     }
 
@@ -184,10 +203,6 @@ async function sendComment(comment: string) {
   try {
     console.log('💬 sendComment llamada:', { comment, userName: userName.value, isConnected: isConnected.value })
     
-    if (!isConnected.value) {
-      throw new Error('No conectado al sistema de reacciones')
-    }
-
     // Verificar estado de sesión antes de enviar
     if (!user.value.isAuthenticated) {
       console.warn('⚠️ Usuario no autenticado al enviar comentario, verificando sesión...')
@@ -195,6 +210,29 @@ async function sendComment(comment: string) {
       
       if (!user.value.isAuthenticated) {
         throw new Error('Debes iniciar sesión para enviar comentarios')
+      }
+    }
+
+    // Si no está conectado, intentar reconectar automáticamente una vez
+    if (!isConnected.value) {
+      console.log('🔄 Sin conexión, intentando reconectar antes de enviar comentario...')
+      
+      if (tenantId.value) {
+        try {
+          await reactionsService.connect(tenantId.value)
+          isConnected.value = reactionsService.isChannelConnected()
+          
+          if (isConnected.value) {
+            console.log('✅ Reconectado exitosamente antes de enviar comentario')
+          } else {
+            throw new Error('No se pudo establecer la conexión')
+          }
+        } catch (reconnectError) {
+          console.warn('⚠️ Error en reconexión automática:', reconnectError)
+          throw new Error('No se pudo conectar al sistema de reacciones')
+        }
+      } else {
+        throw new Error('No se encontró configuración del karaoke')
       }
     }
 
@@ -226,6 +264,29 @@ function getReactionEmoji(type: string): string {
 }
 
 /**
+ * Obtener tooltip descriptivo para cada tipo de reacción
+ */
+function getReactionTooltip(type: string): string {
+  const tooltips: Record<string, string> = {
+    love: 'Me encanta ❤️',
+    clap: 'Aplausos 👏',
+    rock: 'Rock and roll 🤘',
+    mindblown: 'Impresionante 🤩',
+    fire: 'Está en fuego 🔥',
+    guitar: 'Guitarra épica 🎸',
+    electric: 'Energía eléctrica ⚡',
+    music: 'Gran música 🎵',
+    amazing: 'Increíble ⭐',
+    cool: 'Genial 😎',
+    wow: 'Wow 😲',
+    praise: 'Bravo 👨‍🎤',
+    loud: 'A todo volumen 📢'
+  }
+  
+  return tooltips[type] || 'Reacción'
+}
+
+/**
  * Redirigir a la página principal para iniciar sesión
  */
 function redirectToHome() {
@@ -250,6 +311,16 @@ onMounted(async () => {
   // Configurar actualización periódica de la performance
   const performanceInterval = setInterval(loadCurrentPerformance, 5000) // Cada 5 segundos
   
+  // Configurar verificación periódica de conexión (cada 3 segundos)
+  const connectionCheckInterval = setInterval(() => {
+    const wasConnected = isConnected.value
+    isConnected.value = reactionsService.isChannelConnected()
+    
+    if (wasConnected !== isConnected.value) {
+      console.log('🔄 Estado de conexión cambió:', { anterior: wasConnected, actual: isConnected.value })
+    }
+  }, 3000)
+  
   // Configurar verificación periódica de sesión (cada 15 segundos)
   sessionCheckInterval = setInterval(() => {
     console.log('🔄 Verificando estado de sesión...')
@@ -260,6 +331,7 @@ onMounted(async () => {
   onUnmounted(() => {
     console.log('🔄 Limpiando ReaccionesPage...')
     clearInterval(performanceInterval)
+    clearInterval(connectionCheckInterval)
     if (sessionCheckInterval) {
       clearInterval(sessionCheckInterval)
     }

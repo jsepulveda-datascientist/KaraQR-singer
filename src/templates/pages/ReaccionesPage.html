@@ -92,15 +92,7 @@
         </q-banner>
       </div>
       
-      <!-- Estado de conexión para debugging -->
-      <div v-if="!isConnected" class="q-mb-md">
-        <q-banner class="bg-negative text-white" rounded>
-          <template v-slot:avatar>
-            <q-icon name="wifi_off" />
-          </template>
-          Sin conexión al sistema de reacciones. Verifica tu conexión a internet.
-        </q-banner>
-      </div>
+      <!-- Estado de conexión simplificado (solo para debugging si es necesario) -->
       
       <!-- Botones de reacción mejorados -->
       <div class="row q-gutter-sm justify-center" style="margin: 20px 0;">

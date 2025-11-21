@@ -1,5 +1,6 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { reactionsService } from '../services/reactionsService'
+import { useTenant } from './useTenant'
 
 interface User {
   name: string
@@ -20,6 +21,77 @@ const userState = reactive<User>({
  */
 export function useUser() {
   
+  // Obtener acceso al tenantId del composable useTenant
+  const { tenantId: currentTenantId } = useTenant()
+  
+  /**
+   * Reconectar automáticamente al sistema de reacciones
+   * Sistema inteligente con backoff exponencial y reintentos
+   */
+  const reconnectToReactions = async () => {
+    // Solo intentar reconectar si hay un usuario autenticado
+    if (!userState.isAuthenticated) {
+      console.log('🔄 Sin usuario autenticado, saltando reconexión')
+      return
+    }
+
+    // Obtener el tenantId del composable useTenant
+    const tenantId = currentTenantId.value
+    
+    if (!tenantId) {
+      console.log('⚠️ No se encontró tenantId para reconectar:', { 
+        url: window.location.search,
+        tenantIdValue: tenantId 
+      })
+      return
+    }
+
+    console.log('🚀 Iniciando proceso de reconexión automática...', { 
+      tenantId, 
+      userAuthenticated: userState.isAuthenticated,
+      userName: userState.name 
+    })
+
+    // Sistema de reintentos con backoff exponencial
+    const maxAttempts = 3
+    const baseDelay = 1000 // 1 segundo base
+    
+    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+      try {
+        console.log(`🔄 Reconectando automáticamente (intento ${attempt}/${maxAttempts})...`, { tenantId })
+        
+        await reactionsService.connect(tenantId)
+        
+        // Verificar que la conexión realmente se estableció
+        if (reactionsService.isChannelConnected()) {
+          console.log('✅ Reconexión automática exitosa - Usuario conectado a reacciones')
+          return // Éxito, salir del bucle
+        } else {
+          throw new Error('La conexión no se estableció correctamente')
+        }
+        
+      } catch (error) {
+        console.warn(`⚠️ Intento ${attempt} fallido:`, error)
+        
+        // Si no es el último intento, esperar con backoff exponencial
+        if (attempt < maxAttempts) {
+          const delay = baseDelay * Math.pow(2, attempt - 1) // 1s, 2s, 4s
+          console.log(`⏱️ Esperando ${delay}ms antes del siguiente intento...`)
+          await new Promise(resolve => setTimeout(resolve, delay))
+        } else {
+          console.log('❌ Todos los intentos de reconexión fallaron (funcionamiento silencioso)')
+          console.log('🔍 Para debugging - Estado actual:', {
+            userAuthenticated: userState.isAuthenticated,
+            userName: userState.name,
+            tenantId,
+            url: window.location.href
+          })
+          // No mostramos error al usuario, simplemente logeamos
+        }
+      }
+    }
+  }
+
   /**
    * Cargar datos del usuario desde localStorage
    */
@@ -33,6 +105,13 @@ export function useUser() {
           userState.avatar = user.avatar
           userState.isAuthenticated = true
           console.log('👤 Usuario cargado desde localStorage:', user.name)
+          
+          // ✨ RECONEXIÓN AUTOMÁTICA: Intentar reconectar a reacciones
+          // Usar setTimeout para asegurar que el DOM y routing estén listos
+          setTimeout(() => {
+            reconnectToReactions()
+          }, 500)
+          
           return true
         }
       }
