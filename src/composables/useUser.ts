@@ -139,6 +139,37 @@ export function useUser() {
     }
   }
 
+  /**
+   * Verificar y reforzar estado de sesión
+   */
+  const checkSession = () => {
+    const wasAuthenticated = userState.isAuthenticated
+    const success = loadUserFromStorage()
+    
+    if (wasAuthenticated !== userState.isAuthenticated) {
+      console.log('🔐 Estado de sesión cambió durante verificación:', {
+        anterior: wasAuthenticated,
+        actual: userState.isAuthenticated,
+        usuario: userState.name
+      })
+    }
+    
+    return success
+  }
+
+  /**
+   * Obtener información detallada del estado de sesión
+   */
+  const getSessionInfo = () => {
+    return {
+      isAuthenticated: userState.isAuthenticated,
+      name: userState.name,
+      avatar: userState.avatar,
+      hasLocalStorage: !!localStorage.getItem('karaqr-user'),
+      timestamp: new Date().toISOString()
+    }
+  }
+
   // Computeds para acceso reactivo
   const user = computed(() => ({
     name: userState.name,
@@ -151,7 +182,12 @@ export function useUser() {
   const isAuthenticated = computed(() => userState.isAuthenticated)
 
   // Inicializar cargando datos del localStorage al crear el composable
-  loadUserFromStorage()
+  const initialLoad = loadUserFromStorage()
+  console.log('👤 useUser inicializado:', {
+    success: initialLoad,
+    user: userState.name,
+    authenticated: userState.isAuthenticated
+  })
 
   return {
     // Estado reactivo
@@ -165,7 +201,9 @@ export function useUser() {
     logout,
     updateUser,
     loadUserFromStorage,
-    saveUserToStorage
+    saveUserToStorage,
+    checkSession,
+    getSessionInfo
   }
 }
 

@@ -87,7 +87,7 @@
     <!-- Formulario original -->
     <div v-else>
       <div class="text-h4 q-mb-md text-center">
-        🎤 Elije tu karaoke favorito
+        Elije tu karaoke favorito
       </div>
       
       <!-- Sección de anotación rápida -->

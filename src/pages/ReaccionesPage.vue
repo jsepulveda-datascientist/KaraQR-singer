@@ -20,30 +20,16 @@
       
       <q-card-section v-if="currentPerformance && currentSong">
         <div class="text-center">
-          <!-- Indicador de estado -->
-          <q-chip color="positive" text-color="white" size="lg" class="q-mb-md">
-            <q-icon name="mic" class="q-mr-sm" />
-            🎤 CANTANDO AHORA
-          </q-chip>
-          
-          <!-- Información de la canción -->
-          <div class="text-h5 text-weight-bold q-mb-sm">
-            {{ currentSong.title }}
-          </div>
-          <div class="text-subtitle1 text-grey-7 q-mb-sm" v-if="currentSong.artist">
-            por {{ currentSong.artist }}
-          </div>
-          
-          <!-- Nombre del cantante -->
-          <q-chip color="primary" text-color="white" size="lg">
-            🎤 {{ currentPerformance.name }}
-          </q-chip>
-          
-          <!-- Indicador de YouTube -->
-          <div v-if="hasYouTubeVideo" class="q-mt-sm">
-            <q-chip color="red" text-color="white" icon="play_circle_filled">
-              Video en reproducción
-            </q-chip>
+          <!-- Presentación simplificada -->
+          <div class="performance-live">
+            <div class="text-h6 text-weight-bold text-positive q-mb-sm">
+              🎤 {{ currentPerformance.name }}
+            </div>
+            <div class="text-body1 q-mb-sm">
+              <q-icon name="music_note" color="primary" size="sm" class="q-mr-xs" />
+                {{ currentSong.title }} - <span v-if="currentSong.artist">{{ currentSong.artist }}</span>
+            </div>
+            
           </div>
         </div>
       </q-card-section>
@@ -51,27 +37,16 @@
       <!-- Si hay alguien llamado pero no performing -->
       <q-card-section v-else-if="calledPerformance && calledSong">
         <div class="text-center">
-          <!-- Indicador de llamado -->
-          <q-chip color="warning" text-color="white" size="lg" class="q-mb-md">
-            <q-icon name="campaign" class="q-mr-sm" />
-            ¡LLAMADO A ESCENA!
-          </q-chip>
-          
-          <!-- Información de la canción -->
-          <div class="text-h5 text-weight-bold q-mb-sm">
-            {{ calledSong.title }}
-          </div>
-          <div class="text-subtitle1 text-grey-7 q-mb-sm" v-if="calledSong.artist">
-            por {{ calledSong.artist }}
-          </div>
-          
-          <!-- Nombre del cantante -->
-          <q-chip color="orange" text-color="white" size="lg">
-            🎤 {{ calledPerformance.name }}
-          </q-chip>
-          
-          <div class="text-body2 q-mt-md text-grey-6">
-            Esperando a que el cantante suba al escenario...
+          <!-- Presentación simplificada del llamado -->
+          <div class="performance-called">
+            <div class="text-h6 text-weight-bold text-orange q-mb-sm">
+              <q-icon name="campaign" color="orange" size="sm" class="q-mb-sm" />
+              {{ calledPerformance.name }}
+            </div>
+            <div class="text-body1 q-mb-sm">
+              <q-icon name="music_note" color="orange" size="sm" class="q-mr-xs" />
+                {{ calledSong.title }} - <span v-if="calledSong.artist">{{ calledSong.artist }}</span>
+            </div>
           </div>
         </div>
       </q-card-section>
@@ -96,6 +71,28 @@
       </q-card-section>
       
       <q-card-section>
+        <!-- Indicador de estado de sesión -->
+        <div v-if="!user.isAuthenticated" class="q-mb-md">
+          <q-banner class="bg-warning text-dark" rounded>
+            <template v-slot:avatar>
+              <q-icon name="warning" />
+            </template>
+            Sesión no detectada. Es posible que necesites 
+            <q-btn flat color="primary" label="iniciar sesión" @click="redirectToHome" />
+            para enviar reacciones.
+          </q-banner>
+        </div>
+        
+        <!-- Estado de conexión para debugging -->
+        <div v-if="!isConnected" class="q-mb-md">
+          <q-banner class="bg-negative text-white" rounded>
+            <template v-slot:avatar>
+              <q-icon name="wifi_off" />
+            </template>
+            Sin conexión al sistema de reacciones. Verifica tu conexión a internet.
+          </q-banner>
+        </div>
+        
         <!-- Botones de reacción -->
         <div class="row q-gutter-sm justify-start">
           <q-btn
@@ -106,7 +103,7 @@
             round
             @click="sendReaction(reaction.type)"
             :class="{ 'pulse': recentReaction === reaction.type }"
-            :disable="!isConnected"
+            :disable="!isConnected || !user.isAuthenticated"
             class="reaction-btn-circular"
             style="width: 45px; height: 45px; font-size: 18px;"
           >
@@ -125,7 +122,7 @@
               color="secondary"
               text-color="white"
               @click="sendComment(comment)"
-              :disable="!isConnected"
+              :disable="!isConnected || !user.isAuthenticated"
             >
               {{ comment }}
             </q-chip>
@@ -134,9 +131,22 @@
       </q-card-section>
     </q-card>
     
+    <!-- Botón para volver al home -->
+    <div class="text-center q-mt-lg q-mb-xl">
+      <q-btn
+        color="primary"
+        icon="home"
+        label="Volver al inicio"
+        size="lg"
+        rounded
+        @click="redirectToHome"
+        class="home-btn"
+      />
+    </div>
+    
     <!-- Floating Action Button para reacción rápida -->
     <q-page-sticky 
-      v-if="currentPerformance || calledPerformance" 
+      v-if="(currentPerformance || calledPerformance) && user.isAuthenticated && isConnected" 
       position="bottom-right" 
       :offset="[18, 18]"
     >
@@ -146,7 +156,6 @@
         color="red"
         @click="sendReaction('love')"
         class="pulse-heart"
-        :disable="!isConnected"
       />
     </q-page-sticky>
     </div> <!-- Cierre del div v-else -->
@@ -181,11 +190,14 @@ interface ReactionButton {
 
 // Composables y servicios
 const $q = useQuasar()
-const { tenantId, isValidTenant, requireTenant } = useTenant()
-const { userName } = useUser()
+const { tenantId, isValidTenant, requireTenant, navigateWithTenant } = useTenant()
+const { userName, user, checkSession, getSessionInfo } = useUser()
 
 // Estado reactivo
 const isConnected = ref(false)
+
+// Verificación periódica de sesión
+let sessionCheckInterval: any = null
 const currentPerformance = ref<Performance | null>(null)
 const calledPerformance = ref<Performance | null>(null)
 
@@ -281,6 +293,16 @@ async function sendReaction(type: Reaction['type']) {
       throw new Error('No conectado al sistema de reacciones')
     }
 
+    // Verificar estado de sesión antes de enviar
+    if (!user.value.isAuthenticated) {
+      console.warn('⚠️ Usuario no autenticado al enviar reacción, verificando sesión...')
+      checkSession()
+      
+      if (!user.value.isAuthenticated) {
+        throw new Error('Debes iniciar sesión para enviar reacciones')
+      }
+    }
+
     // Enviar reacción via broadcast
     console.log('📤 Enviando reacción con userName:', userName.value)
     await reactionsService.sendReaction(type, userName.value)
@@ -328,6 +350,16 @@ async function sendComment(comment: string) {
       throw new Error('No conectado al sistema de reacciones')
     }
 
+    // Verificar estado de sesión antes de enviar
+    if (!user.value.isAuthenticated) {
+      console.warn('⚠️ Usuario no autenticado al enviar comentario, verificando sesión...')
+      checkSession()
+      
+      if (!user.value.isAuthenticated) {
+        throw new Error('Debes iniciar sesión para enviar comentarios')
+      }
+    }
+
     console.log('📤 Enviando comentario con userName:', userName.value)
     await reactionsService.sendComment(comment, userName.value)
     
@@ -355,11 +387,24 @@ function getReactionEmoji(type: string): string {
   return reaction ? reaction.emoji : '👍'
 }
 
+/**
+ * Redirigir a la página principal para iniciar sesión
+ */
+function redirectToHome() {
+  navigateWithTenant('/')
+}
+
 // Lifecycle hooks
 onMounted(async () => {
+  console.log('🚀 ReaccionesPage montada, inicializando...')
+  
   // Verificar estado de conexión inicial
   isConnected.value = reactionsService.isChannelConnected()
   console.log('🔗 Estado inicial de conexión:', isConnected.value)
+  
+  // Verificar estado de sesión inicial
+  const sessionInfo = getSessionInfo()
+  console.log('👤 Estado inicial de sesión:', sessionInfo)
   
   // Cargar performance actual
   await loadCurrentPerformance()
@@ -367,9 +412,19 @@ onMounted(async () => {
   // Configurar actualización periódica de la performance
   const performanceInterval = setInterval(loadCurrentPerformance, 5000) // Cada 5 segundos
   
+  // Configurar verificación periódica de sesión (cada 15 segundos)
+  sessionCheckInterval = setInterval(() => {
+    console.log('🔄 Verificando estado de sesión...')
+    checkSession()
+  }, 15000)
+  
   // Cleanup al desmontar
   onUnmounted(() => {
+    console.log('🔄 Limpiando ReaccionesPage...')
     clearInterval(performanceInterval)
+    if (sessionCheckInterval) {
+      clearInterval(sessionCheckInterval)
+    }
   })
 })
 
@@ -412,5 +467,29 @@ onUnmounted(() => {
   50% { transform: scale(1); }
   75% { transform: scale(1.1); }
   100% { transform: scale(1); }
+}
+
+.performance-live {
+  background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(139, 195, 74, 0.1) 100%);
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid #4caf50;
+}
+
+.performance-called {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%);
+  padding: 16px;
+  border-radius: 12px;
+  border-left: 4px solid #ff9800;
+}
+
+.home-btn {
+  min-width: 160px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
 }
 </style>

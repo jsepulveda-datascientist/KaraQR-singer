@@ -28,7 +28,7 @@
           <div v-else class="row items-center q-gutter-sm user-info">
             <div class="text-right">
               <div class="text-subtitle2">{{ user.name }}</div>
-              <div class="text-caption text-grey-4">{{ user.role }}</div>
+              <div class="text-caption text-grey-4">Cantante</div>
             </div>
             <q-btn
               ref="avatarButton"
@@ -118,7 +118,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useTenant } from '../composables/useTenant'
 import { useUser } from '../composables/useUser'
@@ -128,7 +128,7 @@ import EssentialLink, { EssentialLinkProps } from '../components/EssentialLink.v
 const router = useRouter()
 const route = useRoute()
 const { tenantId, navigateWithTenant } = useTenant()
-const { logout: userLogout } = useUser()
+const { user, logout: userLogout, loadUserFromStorage } = useUser()
 
 // Detectar si estamos en la página de login
 const isLoginPage = computed(() => route.name === 'login')
@@ -143,6 +143,8 @@ const checkConnectionStatus = () => {
 
 // Intervalo para verificar conexión
 let connectionCheckInterval: any = null
+// Intervalo para verificar sesión
+let sessionCheckInterval: any = null
 
 const essentialLinks: EssentialLinkProps[] = [
   {
@@ -167,36 +169,22 @@ const essentialLinks: EssentialLinkProps[] = [
 
 const leftDrawerOpen = ref(false)
 
-// Estado de usuario sincronizado con localStorage
-const user = reactive({
-  isAuthenticated: false,
-  name: '',
-  avatar: '',
-  role: 'Cantante'
-})
-
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
 async function logout() {
   try {
+    console.log('🔐 Iniciando logout desde MainLayout')
     // Usar el logout del composable que maneja la desconexión automática
     await userLogout()
     
-    // Limpiar estado local del usuario
-    user.isAuthenticated = false
-    user.name = ''
-    user.avatar = ''
-    
     // Redirigir al login manteniendo el tenant
     navigateWithTenant('/login')
+    console.log('✅ Logout completado y redirigido')
   } catch (error) {
-    console.error('Error durante logout:', error)
-    // Forzar logout local aunque haya error
-    user.isAuthenticated = false
-    user.name = ''
-    user.avatar = ''
+    console.error('❌ Error durante logout:', error)
+    // Forzar navegación aunque haya error
     navigateWithTenant('/login')
   }
 }
@@ -205,42 +193,122 @@ function redirectToHome() {
   navigateWithTenant('/')
 }
 
-// Sincronizar estado del usuario con localStorage
-function loadUserFromStorage() {
-  const savedUser = localStorage.getItem('karaqr-user')
-  if (savedUser) {
-    try {
-      const userData = JSON.parse(savedUser)
-      user.isAuthenticated = true
-      user.name = userData.name || ''
-      user.avatar = userData.avatar || ''
-    } catch (error) {
-      console.error('Error loading user data:', error)
-      localStorage.removeItem('karaqr-user')
-    }
+/**
+ * Verificar y reforzar el estado de la sesión
+ */
+function checkSessionStatus() {
+  try {
+    // Forzar recarga desde localStorage
+    loadUserFromStorage()
+    console.log('🔄 Estado de sesión verificado:', {
+      isAuthenticated: user.value.isAuthenticated,
+      name: user.value.name,
+      route: route.path
+    })
+  } catch (error) {
+    console.error('❌ Error al verificar estado de sesión:', error)
   }
 }
 
+/**
+ * Manejar eventos de autenticación personalizados
+ */
+function handleAuthenticationEvents() {
+  // Escuchar evento de autenticación exitosa
+  window.addEventListener('userAuthenticated', (event: any) => {
+    console.log('✅ Usuario autenticado (evento):', event.detail)
+    // El composable ya maneja el estado, solo logueamos
+  })
+  
+  // Escuchar evento de logout
+  window.addEventListener('userLogout', () => {
+    console.log('👋 Usuario deslogueado (evento)')
+    // El composable ya maneja el estado, solo logueamos
+  })
+  
+  // Escuchar evento de actualización de usuario
+  window.addEventListener('userUpdated', (event: any) => {
+    console.log('🔄 Usuario actualizado (evento):', event.detail)
+    // El composable ya maneja el estado, solo logueamos
+  })
+}
+
+/**
+ * Limpiar listeners de eventos
+ */
+function removeAuthenticationEventListeners() {
+  window.removeEventListener('userAuthenticated', handleAuthenticationEvents)
+  window.removeEventListener('userLogout', handleAuthenticationEvents)
+  window.removeEventListener('userUpdated', handleAuthenticationEvents)
+}
+
+// Watch para detectar cambios en el estado del usuario y loguear
+watch(
+  () => user.value,
+  (newUser, oldUser) => {
+    if (newUser.isAuthenticated !== oldUser?.isAuthenticated) {
+      console.log('🔐 Estado de autenticación cambió:', {
+        from: oldUser?.isAuthenticated,
+        to: newUser.isAuthenticated,
+        user: newUser.name,
+        route: route.path
+      })
+    }
+  },
+  { deep: true }
+)
+
 // Cargar usuario al montar el componente
 onMounted(() => {
-  loadUserFromStorage()
+  console.log('🚀 MainLayout montado, inicializando sistemas...')
   
-  // Escuchar cambios en localStorage (para sincronizar entre componentes)
-  window.addEventListener('storage', loadUserFromStorage)
+  // Cargar estado inicial del usuario
+  loadUserFromStorage()
+  console.log('👤 Estado inicial del usuario:', {
+    isAuthenticated: user.value.isAuthenticated,
+    name: user.value.name
+  })
+  
+  // Configurar eventos de autenticación
+  handleAuthenticationEvents()
+  
+  // Escuchar cambios en localStorage (para sincronizar entre pestañas)
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'karaqr-user') {
+      console.log('🔄 localStorage cambió, recargando usuario...')
+      loadUserFromStorage()
+    }
+  })
   
   // Iniciar monitoreo de conexión
   checkConnectionStatus()
-  connectionCheckInterval = setInterval(checkConnectionStatus, 2000) // Verificar cada 2 segundos
+  connectionCheckInterval = setInterval(checkConnectionStatus, 2000)
+  
+  // Iniciar verificación periódica de sesión (cada 10 segundos)
+  sessionCheckInterval = setInterval(checkSessionStatus, 10000)
+  
+  console.log('✅ Todos los sistemas iniciados')
 })
 
-// Limpiar listener al desmontar
+// Limpiar listeners al desmontar
 onUnmounted(() => {
+  console.log('🔄 Limpiando MainLayout...')
+  
+  // Remover listeners de eventos personalizados
+  removeAuthenticationEventListeners()
+  
+  // Remover listener de storage
   window.removeEventListener('storage', loadUserFromStorage)
   
-  // Limpiar intervalo de verificación de conexión
+  // Limpiar intervalos
   if (connectionCheckInterval) {
     clearInterval(connectionCheckInterval)
   }
+  if (sessionCheckInterval) {
+    clearInterval(sessionCheckInterval)
+  }
+  
+  console.log('✅ MainLayout limpiado')
 })
 </script>
 

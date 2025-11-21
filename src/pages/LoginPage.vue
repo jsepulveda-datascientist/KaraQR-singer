@@ -43,7 +43,7 @@
               <div class="text-subtitle1 q-mb-md text-center text-grey-8">
                 <q-icon name="face" class="q-mr-sm" />
                 Elige tu avatar
-                <span class="text-red-6">*</span>
+                <span class="text-grey-5">(opcional)</span>
               </div>
               
               <div class="row justify-center q-gutter-sm">
@@ -67,10 +67,6 @@
                 </q-btn>
               </div>
               
-              <div v-if="showAvatarError" class="text-caption text-red-6 text-center q-mt-sm">
-                <q-icon name="error" size="xs" class="q-mr-xs" />
-                Selecciona un avatar para continuar
-              </div>
             </div>
             
             <!-- Botón de login -->
@@ -155,7 +151,6 @@ const loginForm = reactive({
 })
 
 const loginLoading = ref(false)
-const showAvatarError = ref(false)
 
 // Opciones de avatar
 const avatarOptions = [
@@ -168,6 +163,9 @@ const avatarOptions = [
   'https://cdn.quasar.dev/img/avatar.png'
 ]
 
+// Avatar por defecto si no se selecciona ninguno
+const defaultAvatar = 'https://cdn.quasar.dev/img/avatar.png'
+
 // Validaciones
 const nameRules = [
   (val: string) => !!val || 'El nombre artístico es requerido',
@@ -177,22 +175,15 @@ const nameRules = [
 
 const canSubmit = computed(() => {
   return loginForm.name.trim().length >= 2 && 
-         loginForm.name.length <= 30 && 
-         loginForm.avatar !== ''
+         loginForm.name.length <= 30
+  // Ya no se requiere avatar
 })
 
 function selectAvatar(avatar: string) {
   loginForm.avatar = avatar
-  showAvatarError.value = false
 }
 
 async function handleLogin() {
-  // Validar avatar seleccionado
-  if (!loginForm.avatar) {
-    showAvatarError.value = true
-    return
-  }
-  
   // Validar nombre
   const nameValidation = nameRules.every(rule => rule(loginForm.name) === true)
   if (!nameValidation) return
@@ -203,8 +194,11 @@ async function handleLogin() {
     // Simular proceso de login
     await new Promise(resolve => setTimeout(resolve, 1500))
     
+    // Usar avatar seleccionado o el por defecto si no hay selección
+    const avatarToUse = loginForm.avatar || defaultAvatar
+    
     // Autenticar usuario (ahora incluye conexión automática a reacciones)
-    await authenticate(loginForm.name.trim(), loginForm.avatar, tenantId.value)
+    await authenticate(loginForm.name.trim(), avatarToUse, tenantId.value)
     
     // Redirigir al home después del login exitoso
     navigateWithTenant('/')

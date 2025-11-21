@@ -6,7 +6,7 @@
     <!-- Contenido principal cuando está autenticado Y hay tenant -->
     <div v-else class="text-center">
       <div class="text-h4 text-primary q-mb-md">
-        ¡Bienvenido {{ user.name }}! 🎤
+        ¡Bienvenido {{ user.name }}!
       </div>
       <div class="text-h6 q-mb-xl">
         Tu aplicación para participar en karaoke
@@ -40,16 +40,7 @@
           
           <q-card-section>
             <q-list>
-              <q-item>
-                <q-item-section avatar>
-                  <q-icon color="primary" name="qr_code_scanner" />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>Escanea el código QR</q-item-label>
-                  <q-item-label caption>Usa tu cámara para conectarte al evento</q-item-label>
-                </q-item-section>
-              </q-item>
-              
+               
               <q-item>
                 <q-item-section avatar>
                   <q-icon color="primary" name="mic" />
