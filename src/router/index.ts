@@ -1,16 +1,32 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
+  // Rutas públicas SIN layout (login, guest-login, auth-callback)
+  {
+    path: '/login',
+    component: () => import('../pages/LoginPage.vue'),
+    name: 'login'
+  },
+  {
+    path: '/guest-login',
+    component: () => import('../pages/GuestLoginPage.vue'),
+    name: 'guest-login'
+  },
+  {
+    path: '/auth/callback',
+    component: () => import('../pages/AuthCallbackPage.vue'),
+    name: 'auth-callback'
+  },
+  // Rutas principales CON layout (sidebar, header, footer)
   {
     path: '/',
     component: () => import('../layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('../pages/IndexPage.vue'), name: 'home' },
-      { path: '/login', component: () => import('../pages/LoginPage.vue'), name: 'login' },
-      { path: '/guest-login', component: () => import('../pages/GuestLoginPage.vue'), name: 'guest-login' },
-      { path: '/auth/callback', component: () => import('../pages/AuthCallbackPage.vue'), name: 'auth-callback' },
       { path: '/anotarse', component: () => import('../pages/AnotarsePage.vue'), name: 'anotarse' },
       { path: '/reacciones', component: () => import('../pages/ReaccionesPage.vue'), name: 'reacciones' },
+      { path: '/favoritos', component: () => import('../pages/FavoritesPage.vue'), name: 'favoritos' },
+      { path: '/settings', component: () => import('../pages/SettingsPage.vue'), name: 'settings' },
       // Mantener rutas anteriores por compatibilidad
       { path: '/queue', redirect: '/anotarse' },
       { path: '/profile', component: () => import('../pages/ProfilePage.vue'), name: 'profile' }

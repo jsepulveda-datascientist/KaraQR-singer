@@ -239,9 +239,25 @@ export function useUser() {
   }
 
   /**
-   * Actualizar datos del usuario
+   * Actualizar perfil de usuario
    */
-  const updateUser = (name?: string, avatar?: string) => {
+  const updateUserProfile = (updates: { name?: string; avatar?: string }) => {
+    if (updates.name !== undefined) {
+      userState.name = updates.name
+    }
+    if (updates.avatar !== undefined) {
+      userState.avatar = updates.avatar
+    }
+    
+    saveUserToStorage()
+    
+    console.log('✅ Perfil de usuario actualizado:', userState)
+  }
+
+  /**
+   * Actualizar datos del usuario (método legacy)
+   */
+  const updateUser = (name: string, avatar: string) => {
     if (name !== undefined) {
       userState.name = name.trim()
     }
@@ -323,6 +339,7 @@ export function useUser() {
     authenticateWithOAuth,
     logout,
     updateUser,
+    updateUserProfile,
     loadUserFromStorage,
     saveUserToStorage,
     checkSession,

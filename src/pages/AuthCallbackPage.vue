@@ -1,4 +1,6 @@
 <template>
+  <q-layout view="lHh Lpr lFf">
+    <q-page-container>
   <q-page class="flex flex-center karaqr-page-bg">
     <div class="text-center">
       <q-spinner-ios 
@@ -14,6 +16,8 @@
       </div>
     </div>
   </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup lang="ts">

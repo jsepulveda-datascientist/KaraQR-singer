@@ -26,6 +26,14 @@ class AuthService {
   private extractUserFromOAuth(oauthUser: any): AuthUser {
     const metadata = oauthUser.user_metadata || {}
     
+    // Log completo de todos los datos recibidos de Google
+    console.log('📦 Datos completos de OAuth:', {
+      id: oauthUser.id,
+      email: oauthUser.email,
+      user_metadata: metadata,
+      identities: oauthUser.identities
+    })
+    
     // Intentar obtener el nombre en este orden de prioridad
     const name = metadata.name || 
                  metadata.full_name || 
@@ -34,15 +42,19 @@ class AuthService {
                  'Usuario'
     
     // Intentar obtener el avatar en este orden de prioridad
+    // Google generalmente usa 'avatar_url' o 'picture'
     const avatar = metadata.avatar_url || 
                    metadata.picture || 
-                   metadata.photo || 
+                   metadata.photo ||
+                   (oauthUser.identities && oauthUser.identities[0]?.identity_data?.avatar_url) ||
+                   (oauthUser.identities && oauthUser.identities[0]?.identity_data?.picture) ||
                    'https://cdn.quasar.dev/img/avatar.png'
     
     logger.info('👤 Datos extraídos de Google:', {
       name,
       email: oauthUser.email,
-      hasAvatar: !!metadata.avatar_url || !!metadata.picture,
+      avatar,
+      hasCustomAvatar: !avatar.includes('quasar.dev'),
       metadata: metadata
     })
     

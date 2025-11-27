@@ -1,10 +1,12 @@
 <template>
-  <q-page class="flex flex-center login-page karaqr-page-bg">
-    <!-- Mostrar prompt cuando no hay tenant configurado -->
-    <NoTenantPrompt v-if="!isValidTenant" />
-    
-    <!-- Opciones de login cuando hay tenant válido -->
-    <div v-else class="text-center full-width">
+  <q-layout view="lHh Lpr lFf">
+    <q-page-container>
+      <q-page class="flex flex-center login-page karaqr-page-bg">
+        <!-- Mostrar prompt cuando no hay tenant configurado -->
+        <NoTenantPrompt v-if="!isValidTenant" />
+        
+        <!-- Opciones de login cuando hay tenant válido -->
+        <div v-else class="text-center full-width">
       <div class="text-h3 text-primary q-mb-md">
         🎤 KaraQR Singer
       </div>
@@ -112,7 +114,9 @@
         </div>
       </div>
     </div>
-  </q-page>
+      </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup lang="ts">

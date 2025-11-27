@@ -153,6 +153,111 @@ export class SupabaseService {
   onAuthStateChange(callback: (event: string, session: any) => void) {
     return this.client.auth.onAuthStateChange(callback)
   }
+
+  // ==================== FAVORITE SONGS ====================
+
+  /**
+   * Obtener todas las canciones favoritas del usuario
+   */
+  async getFavoriteSongs(userId: string) {
+    try {
+      const { data, error } = await this.client
+        .from('favorite_songs')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+
+      if (error) {
+        logger.error('Error al obtener canciones favoritas:', error)
+        throw error
+      }
+
+      return data
+    } catch (error) {
+      logger.error('Excepción en getFavoriteSongs:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Agregar una canción a favoritos
+   */
+  async addFavoriteSong(userId: string, songTitle: string, artistName: string, youtubeUrl?: string) {
+    try {
+      const { data, error } = await this.client
+        .from('favorite_songs')
+        .insert({
+          user_id: userId,
+          song_title: songTitle,
+          artist_name: artistName,
+          youtube_url: youtubeUrl || null
+        })
+        .select()
+        .single()
+
+      if (error) {
+        logger.error('Error al agregar canción favorita:', error)
+        throw error
+      }
+
+      logger.info('✅ Canción agregada a favoritos:', data)
+      return data
+    } catch (error) {
+      logger.error('Excepción en addFavoriteSong:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Actualizar una canción favorita
+   */
+  async updateFavoriteSong(id: string, songTitle: string, artistName: string, youtubeUrl?: string) {
+    try {
+      const { data, error } = await this.client
+        .from('favorite_songs')
+        .update({
+          song_title: songTitle,
+          artist_name: artistName,
+          youtube_url: youtubeUrl || null
+        })
+        .eq('id', id)
+        .select()
+        .single()
+
+      if (error) {
+        logger.error('Error al actualizar canción favorita:', error)
+        throw error
+      }
+
+      logger.info('✅ Canción actualizada:', data)
+      return data
+    } catch (error) {
+      logger.error('Excepción en updateFavoriteSong:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Eliminar una canción de favoritos
+   */
+  async deleteFavoriteSong(id: string) {
+    try {
+      const { error } = await this.client
+        .from('favorite_songs')
+        .delete()
+        .eq('id', id)
+
+      if (error) {
+        logger.error('Error al eliminar canción favorita:', error)
+        throw error
+      }
+
+      logger.info('✅ Canción eliminada de favoritos')
+    } catch (error) {
+      logger.error('Excepción en deleteFavoriteSong:', error)
+      throw error
+    }
+  }
 }
 
 // Exportar instancia singleton

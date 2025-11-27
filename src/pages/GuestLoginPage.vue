@@ -1,6 +1,8 @@
 <template>
-  <q-page class="flex flex-center login-page karaqr-page-bg">
-    <!-- Mostrar prompt cuando no hay tenant configurado -->
+  <q-layout view="lHh Lpr lFf">
+    <q-page-container>
+      <q-page class="flex flex-center login-page karaqr-page-bg">
+        <!-- Mostrar prompt cuando no hay tenant configurado -->
     <NoTenantPrompt v-if="!isValidTenant" />
     
     <!-- Formulario de login cuando hay tenant válido -->
@@ -14,6 +16,19 @@
       
       <q-card class="login-card q-pa-lg" style="max-width: 450px; margin: 0 auto;">
         <q-card-section>
+          <!-- Botón volver -->
+          <q-btn
+            flat
+            dense
+            round
+            icon="arrow_back"
+            color="grey-7"
+            class="absolute-top-left q-ma-sm"
+            @click="goBackToLogin"
+          >
+            <q-tooltip>Volver a opciones de login</q-tooltip>
+          </q-btn>
+          
           <div class="text-h5 text-center q-mb-md text-primary">
             ✨ Crea tu perfil de cantante
           </div>
@@ -132,6 +147,8 @@
       </div>
     </div>
   </q-page>
+    </q-page-container>
+  </q-layout>
 </template>
 
 <script setup lang="ts">
@@ -145,6 +162,11 @@ import NoTenantPrompt from '../components/NoTenantPrompt.vue'
 const router = useRouter()
 const { tenantId, extractTenantFromRoute, navigateWithTenant, isValidTenant } = useTenant()
 const { authenticate } = useUser()
+
+// Función para volver a la pantalla de login
+function goBackToLogin() {
+  navigateWithTenant('/login')
+}
 
 // Estado del formulario
 const loginForm = reactive({

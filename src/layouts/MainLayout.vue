@@ -48,6 +48,12 @@ const essentialLinks: EssentialLinkProps[] = [
     caption: 'Reacciona a las presentaciones',
     icon: 'favorite',
     link: '/reacciones'
+  },
+  {
+    title: 'Mis Favoritos',
+    caption: 'Gestiona tus temas favoritos',
+    icon: 'star',
+    link: '/favoritos'
   }
 ]
 
