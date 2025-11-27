@@ -86,6 +86,73 @@ export class SupabaseService {
     }
     return session
   }
+
+  /**
+   * Iniciar sesión con Google OAuth
+   */
+  async signInWithGoogle(redirectTo?: string) {
+    try {
+      const { data, error } = await this.client.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: redirectTo || `${window.location.origin}/auth/callback`
+        }
+      })
+
+      if (error) {
+        logger.error('Error en login con Google:', error)
+        throw error
+      }
+
+      logger.info('Inicio de sesión con Google iniciado:', data)
+      return { data, error: null }
+    } catch (error) {
+      logger.error('Excepción en signInWithGoogle:', error)
+      return { data: null, error }
+    }
+  }
+
+  /**
+   * Cerrar sesión
+   */
+  async signOut() {
+    try {
+      const { error } = await this.client.auth.signOut()
+      if (error) {
+        logger.error('Error al cerrar sesión:', error)
+        throw error
+      }
+      logger.info('Sesión cerrada exitosamente')
+      return { error: null }
+    } catch (error) {
+      logger.error('Excepción en signOut:', error)
+      return { error }
+    }
+  }
+
+  /**
+   * Obtener usuario actual de la sesión
+   */
+  async getCurrentUser() {
+    try {
+      const { data: { user }, error } = await this.client.auth.getUser()
+      if (error) {
+        logger.error('Error al obtener usuario:', error)
+        return null
+      }
+      return user
+    } catch (error) {
+      logger.error('Excepción en getCurrentUser:', error)
+      return null
+    }
+  }
+
+  /**
+   * Escuchar cambios en el estado de autenticación
+   */
+  onAuthStateChange(callback: (event: string, session: any) => void) {
+    return this.client.auth.onAuthStateChange(callback)
+  }
 }
 
 // Exportar instancia singleton

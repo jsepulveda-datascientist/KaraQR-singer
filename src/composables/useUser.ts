@@ -172,6 +172,35 @@ export function useUser() {
   }
 
   /**
+   * Autenticar usuario con datos de OAuth (Google)
+   */
+  const authenticateWithOAuth = async (user: any, tenantId?: string) => {
+    userState.name = user.name
+    userState.avatar = user.avatar
+    userState.isAuthenticated = true
+    
+    // El usuario ya fue guardado en localStorage por authService
+    
+    // Conectar al sistema de reacciones si se proporciona tenantId
+    if (tenantId) {
+      try {
+        await reactionsService.connect(tenantId)
+        console.log('✅ Conectado al sistema de reacciones para tenant:', tenantId)
+      } catch (error) {
+        console.warn('⚠️ Error al conectar a reacciones durante autenticación OAuth:', error)
+        // No bloqueamos la autenticación por errores de conexión
+      }
+    }
+    
+    // Emitir evento para sincronizar con otros componentes
+    window.dispatchEvent(new CustomEvent('userAuthenticated', { 
+      detail: { name: userState.name, avatar: userState.avatar } 
+    }))
+    
+    console.log('✅ Usuario OAuth autenticado:', userState.name)
+  }
+
+  /**
    * Cerrar sesión del usuario
    */
   const logout = async () => {
@@ -277,6 +306,7 @@ export function useUser() {
     
     // Métodos
     authenticate,
+    authenticateWithOAuth,
     logout,
     updateUser,
     loadUserFromStorage,
