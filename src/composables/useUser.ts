@@ -1,5 +1,6 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { reactionsService } from '../services/reactionsService'
+import { authService } from '../services/authService'
 import { useTenant } from './useTenant'
 
 interface User {
@@ -172,6 +173,35 @@ export function useUser() {
   }
 
   /**
+   * Autenticar usuario con datos de OAuth (Google)
+   */
+  const authenticateWithOAuth = async (user: any, tenantId?: string) => {
+    userState.name = user.name
+    userState.avatar = user.avatar
+    userState.isAuthenticated = true
+    
+    // El usuario ya fue guardado en localStorage por authService
+    
+    // Conectar al sistema de reacciones si se proporciona tenantId
+    if (tenantId) {
+      try {
+        await reactionsService.connect(tenantId)
+        console.log('✅ Conectado al sistema de reacciones para tenant:', tenantId)
+      } catch (error) {
+        console.warn('⚠️ Error al conectar a reacciones durante autenticación OAuth:', error)
+        // No bloqueamos la autenticación por errores de conexión
+      }
+    }
+    
+    // Emitir evento para sincronizar con otros componentes
+    window.dispatchEvent(new CustomEvent('userAuthenticated', { 
+      detail: { name: userState.name, avatar: userState.avatar } 
+    }))
+    
+    console.log('✅ Usuario OAuth autenticado:', userState.name)
+  }
+
+  /**
    * Cerrar sesión del usuario
    */
   const logout = async () => {
@@ -183,22 +213,51 @@ export function useUser() {
       console.warn('⚠️ Error al desconectar reacciones:', error)
     }
     
+    // Cerrar sesión usando authService (maneja tanto OAuth como guest)
+    try {
+      await authService.logout()
+      console.log('🔐 Sesión cerrada en authService')
+    } catch (error) {
+      console.warn('⚠️ Error al cerrar sesión en authService:', error)
+    }
+    
+    // Limpiar estado local
     userState.name = ''
     userState.avatar = ''
     userState.isAuthenticated = false
-    
-    localStorage.removeItem('karaqr-user')
     
     // Emitir evento de logout
     window.dispatchEvent(new CustomEvent('userLogout'))
     
     console.log('👋 Usuario desautenticado')
+    
+    // Obtener el tenantId actual para preservarlo en la redirección
+    const { navigateWithTenant } = useTenant()
+    
+    // Redirigir a la página de login
+    navigateWithTenant('/login')
   }
 
   /**
-   * Actualizar datos del usuario
+   * Actualizar perfil de usuario
    */
-  const updateUser = (name?: string, avatar?: string) => {
+  const updateUserProfile = (updates: { name?: string; avatar?: string }) => {
+    if (updates.name !== undefined) {
+      userState.name = updates.name
+    }
+    if (updates.avatar !== undefined) {
+      userState.avatar = updates.avatar
+    }
+    
+    saveUserToStorage()
+    
+    console.log('✅ Perfil de usuario actualizado:', userState)
+  }
+
+  /**
+   * Actualizar datos del usuario (método legacy)
+   */
+  const updateUser = (name: string, avatar: string) => {
     if (name !== undefined) {
       userState.name = name.trim()
     }
@@ -277,8 +336,10 @@ export function useUser() {
     
     // Métodos
     authenticate,
+    authenticateWithOAuth,
     logout,
     updateUser,
+    updateUserProfile,
     loadUserFromStorage,
     saveUserToStorage,
     checkSession,

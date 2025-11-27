@@ -194,7 +194,7 @@
 }
 
 // Remover animaciones complejas
-@keyframes none {
+@keyframes "none" {
   0%, 100% { 
     opacity: 1; 
   }

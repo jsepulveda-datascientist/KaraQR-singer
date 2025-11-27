@@ -14,6 +14,12 @@ export function useTenant() {
 
   // Función para extraer y almacenar tenant de query params
   const extractTenantFromRoute = () => {
+    // Validar que route y query existen
+    if (!route || !route.query) {
+      console.warn('⚠️ Route o query no disponible')
+      return tenantId.value
+    }
+    
     const tenant = route.query.tenant as string
     console.log('🔍 extractTenantFromRoute - tenant de URL:', tenant)
     console.log('🔍 extractTenantFromRoute - tenantId.value actual:', tenantId.value)
@@ -44,9 +50,13 @@ export function useTenant() {
 
   // Observar cambios en la ruta
   watch(
-    () => route.query.tenant,
+    () => route?.query?.tenant,
     () => {
-      extractTenantFromRoute()
+      try {
+        extractTenantFromRoute()
+      } catch (error) {
+        console.warn('⚠️ Error al extraer tenant de ruta:', error)
+      }
     },
     { immediate: true }
   )
@@ -56,10 +66,27 @@ export function useTenant() {
 
   // Función para navegar manteniendo el tenant
   const navigateWithTenant = (path: string) => {
-    router.push({
-      path,
-      query: { ...route.query, tenant: tenantId.value }
-    })
+    try {
+      if (!router) {
+        console.warn('⚠️ Router no disponible para navegación')
+        return
+      }
+      
+      const query = route?.query || {}
+      
+      router.push({
+        path,
+        query: { ...query, tenant: tenantId.value }
+      })
+    } catch (error) {
+      console.error('❌ Error al navegar con tenant:', error)
+      // Intentar navegación simple sin query params como fallback
+      try {
+        router.push(path)
+      } catch (fallbackError) {
+        console.error('❌ Error en navegación fallback:', fallbackError)
+      }
+    }
   }
 
   // Función para obtener URL con tenant

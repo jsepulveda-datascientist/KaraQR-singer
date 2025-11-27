@@ -54,6 +54,17 @@
               transition-hide="scale"
             >
               <q-list style="min-width: 180px">
+                <q-item clickable v-close-popup @click="navigateWithTenant('/settings')">
+                  <q-item-section avatar>
+                    <q-icon name="settings" color="primary" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label>Configuración</q-item-label>
+                  </q-item-section>
+                </q-item>
+                
+                <q-separator />
+                
                 <q-item clickable v-close-popup @click="logout">
                   <q-item-section avatar>
                     <q-icon name="logout" color="negative" />
