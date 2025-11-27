@@ -17,6 +17,46 @@ export interface AuthUser {
 class AuthService {
   
   /**
+   * Extraer datos del usuario desde la información de OAuth de Google
+   * Google proporciona estos campos en user_metadata:
+   * - name, full_name: Nombre completo del usuario
+   * - avatar_url, picture: URL de la foto de perfil
+   * - email: Correo electrónico
+   */
+  private extractUserFromOAuth(oauthUser: any): AuthUser {
+    const metadata = oauthUser.user_metadata || {}
+    
+    // Intentar obtener el nombre en este orden de prioridad
+    const name = metadata.name || 
+                 metadata.full_name || 
+                 metadata.given_name || 
+                 oauthUser.email?.split('@')[0] || 
+                 'Usuario'
+    
+    // Intentar obtener el avatar en este orden de prioridad
+    const avatar = metadata.avatar_url || 
+                   metadata.picture || 
+                   metadata.photo || 
+                   'https://cdn.quasar.dev/img/avatar.png'
+    
+    logger.info('👤 Datos extraídos de Google:', {
+      name,
+      email: oauthUser.email,
+      hasAvatar: !!metadata.avatar_url || !!metadata.picture,
+      metadata: metadata
+    })
+    
+    return {
+      id: oauthUser.id,
+      email: oauthUser.email || null,
+      name: name,
+      avatar: avatar,
+      provider: 'google',
+      isAuthenticated: true
+    }
+  }
+  
+  /**
    * Iniciar sesión con Google
    */
   async loginWithGoogle(): Promise<{ success: boolean; error?: any }> {
@@ -75,18 +115,17 @@ class AuthService {
       const oauthUser = await supabaseService.getCurrentUser()
       
       if (oauthUser) {
-        // Usuario autenticado con OAuth
-        const authUser: AuthUser = {
-          id: oauthUser.id,
-          email: oauthUser.email || null,
-          name: oauthUser.user_metadata?.full_name || oauthUser.email?.split('@')[0] || 'Usuario',
-          avatar: oauthUser.user_metadata?.avatar_url || oauthUser.user_metadata?.picture || 'https://cdn.quasar.dev/img/avatar.png',
-          provider: 'google',
-          isAuthenticated: true
-        }
+        // Usuario autenticado con OAuth - extraer datos de Google
+        const authUser = this.extractUserFromOAuth(oauthUser)
         
         // Guardar en localStorage para consistencia
         localStorage.setItem('karaqr-user', JSON.stringify(authUser))
+        
+        logger.info('✅ Usuario OAuth recuperado:', {
+          name: authUser.name,
+          email: authUser.email,
+          provider: authUser.provider
+        })
         
         return authUser
       }
@@ -140,17 +179,17 @@ class AuthService {
       logger.info('🔄 Cambio en estado de autenticación:', event)
       
       if (event === 'SIGNED_IN' && session?.user) {
-        // Usuario se autenticó con OAuth
-        const authUser: AuthUser = {
-          id: session.user.id,
-          email: session.user.email || null,
-          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Usuario',
-          avatar: session.user.user_metadata?.avatar_url || session.user.user_metadata?.picture || 'https://cdn.quasar.dev/img/avatar.png',
-          provider: 'google',
-          isAuthenticated: true
-        }
+        // Usuario se autenticó con OAuth - extraer datos de Google
+        const authUser = this.extractUserFromOAuth(session.user)
         
         localStorage.setItem('karaqr-user', JSON.stringify(authUser))
+        
+        logger.info('✅ Usuario OAuth autenticado:', {
+          name: authUser.name,
+          email: authUser.email,
+          hasAvatar: authUser.avatar !== 'https://cdn.quasar.dev/img/avatar.png'
+        })
+        
         callback(authUser)
       } else if (event === 'SIGNED_OUT') {
         // Usuario cerró sesión

@@ -1,5 +1,6 @@
 import { ref, reactive, computed, watch } from 'vue'
 import { reactionsService } from '../services/reactionsService'
+import { authService } from '../services/authService'
 import { useTenant } from './useTenant'
 
 interface User {
@@ -212,16 +213,29 @@ export function useUser() {
       console.warn('⚠️ Error al desconectar reacciones:', error)
     }
     
+    // Cerrar sesión usando authService (maneja tanto OAuth como guest)
+    try {
+      await authService.logout()
+      console.log('🔐 Sesión cerrada en authService')
+    } catch (error) {
+      console.warn('⚠️ Error al cerrar sesión en authService:', error)
+    }
+    
+    // Limpiar estado local
     userState.name = ''
     userState.avatar = ''
     userState.isAuthenticated = false
-    
-    localStorage.removeItem('karaqr-user')
     
     // Emitir evento de logout
     window.dispatchEvent(new CustomEvent('userLogout'))
     
     console.log('👋 Usuario desautenticado')
+    
+    // Obtener el tenantId actual para preservarlo en la redirección
+    const { navigateWithTenant } = useTenant()
+    
+    // Redirigir a la página de login
+    navigateWithTenant('/login')
   }
 
   /**

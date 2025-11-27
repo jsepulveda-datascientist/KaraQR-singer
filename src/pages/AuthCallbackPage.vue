@@ -27,22 +27,46 @@ const router = useRouter()
 const { authenticateWithOAuth } = useUser()
 const { tenantId, navigateWithTenant } = useTenant()
 
-const statusMessage = ref('Completando autenticación...')
-const subMessage = ref('Un momento por favor')
+const statusMessage = ref('Procesando autenticación con Google...')
+const subMessage = ref('Esto puede tomar unos segundos')
 
 onMounted(async () => {
   try {
     console.log('🔐 AuthCallback: Procesando callback de OAuth...')
     
-    // Esperar un momento para que Supabase procese la sesión
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Esperar más tiempo para que Supabase procese la sesión completa
+    // El hash fragment de OAuth necesita ser procesado por Supabase
+    statusMessage.value = 'Verificando sesión...'
+    await new Promise(resolve => setTimeout(resolve, 2000))
     
-    // Obtener el usuario autenticado
-    const user = await authService.getCurrentUser()
+    // Intentar obtener el usuario con reintentos
+    let user = null
+    let attempts = 0
+    const maxAttempts = 5
+    
+    while (!user && attempts < maxAttempts) {
+      attempts++
+      console.log(`🔄 Intento ${attempts}/${maxAttempts} de obtener usuario...`)
+      statusMessage.value = `Verificando credenciales... (${attempts}/${maxAttempts})`
+      
+      try {
+        user = await authService.getCurrentUser()
+        
+        if (user) {
+          console.log('✅ Usuario OAuth autenticado:', user)
+          break
+        }
+      } catch (error) {
+        console.warn(`⚠️ Intento ${attempts} falló:`, error)
+      }
+      
+      // Esperar antes del siguiente intento
+      if (!user && attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    }
     
     if (user) {
-      console.log('✅ Usuario OAuth autenticado:', user)
-      
       statusMessage.value = `¡Bienvenido, ${user.name}!`
       subMessage.value = 'Configurando tu sesión de karaoke...'
       
@@ -62,7 +86,7 @@ onMounted(async () => {
     } else {
       console.error('❌ No se pudo obtener usuario después del OAuth')
       statusMessage.value = 'Error en autenticación'
-      subMessage.value = 'Redirigiendo al login...'
+      subMessage.value = 'No se pudo completar el inicio de sesión. Redirigiendo...'
       
       await new Promise(resolve => setTimeout(resolve, 2000))
       navigateWithTenant('/login')
@@ -71,7 +95,7 @@ onMounted(async () => {
   } catch (error) {
     console.error('❌ Error en callback de autenticación:', error)
     statusMessage.value = 'Error en autenticación'
-    subMessage.value = 'Redirigiendo al login...'
+    subMessage.value = 'Ocurrió un error. Redirigiendo al login...'
     
     await new Promise(resolve => setTimeout(resolve, 2000))
     navigateWithTenant('/login')
