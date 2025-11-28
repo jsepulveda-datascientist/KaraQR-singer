@@ -31,12 +31,13 @@
               class="full-width google-btn"
               @click="handleGoogleLogin"
               :loading="googleLoading"
+              no-wrap
             >
-              <div class="row items-center q-gutter-md full-width justify-center">
-                <q-avatar size="32px">
+              <div class="row items-center q-gutter-sm full-width justify-center no-wrap">
+                <q-avatar size="28px">
                   <img src="https://www.google.com/favicon.ico" alt="Google" />
                 </q-avatar>
-                <span class="text-h6">Continuar con Google</span>
+                <span class="btn-text">Iniciar con Google</span>
               </div>
               <template v-slot:loading>
                 <q-spinner-ios color="grey-8" size="24px" />
@@ -58,11 +59,12 @@
               class="full-width guest-btn"
               @click="handleGuestLogin"
               :loading="guestLoading"
+              no-wrap
               style="background: linear-gradient(135deg, #6366f1, #06b6d4) !important; color: white !important;"
             >
-              <div class="row items-center q-gutter-md full-width justify-center">
-                <q-icon name="person" size="32px" />
-                <span class="text-h6">Continuar como Invitado</span>
+              <div class="row items-center q-gutter-sm full-width justify-center no-wrap">
+                <q-icon name="person" size="28px" />
+                <span class="btn-text">Iniciar como Invitado</span>
               </div>
               <template v-slot:loading>
                 <q-spinner-ios color="white" size="24px" />
@@ -208,6 +210,7 @@ onMounted(() => {
   transition: all 0.3s ease;
   padding: 16px !important;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .google-btn:hover {
@@ -221,11 +224,22 @@ onMounted(() => {
   padding: 16px !important;
   font-weight: 600;
   transition: all 0.3s ease;
+  white-space: nowrap;
 }
 
 .guest-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+}
+
+.btn-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.no-wrap {
+  flex-wrap: nowrap !important;
 }
 
 .info-card {

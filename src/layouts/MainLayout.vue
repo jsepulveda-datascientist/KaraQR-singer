@@ -54,6 +54,12 @@ const essentialLinks: EssentialLinkProps[] = [
     caption: 'Gestiona tus temas favoritos',
     icon: 'star',
     link: '/favoritos'
+  },
+  {
+    title: 'Cupones y Descuentos',
+    caption: 'Ofertas exclusivas',
+    icon: 'local_offer',
+    link: '/cupones'
   }
 ]
 
