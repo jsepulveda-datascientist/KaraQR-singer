@@ -26,6 +26,7 @@ const routes = [
       { path: '/anotarse', component: () => import('../pages/AnotarsePage.vue'), name: 'anotarse' },
       { path: '/reacciones', component: () => import('../pages/ReaccionesPage.vue'), name: 'reacciones' },
       { path: '/favoritos', component: () => import('../pages/FavoritesPage.vue'), name: 'favoritos' },
+      { path: '/cupones', component: () => import('../pages/CouponsPage.vue'), name: 'cupones' },
       { path: '/settings', component: () => import('../pages/SettingsPage.vue'), name: 'settings' },
       // Mantener rutas anteriores por compatibilidad
       { path: '/queue', redirect: '/anotarse' },
